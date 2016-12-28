@@ -1,8 +1,8 @@
 {
-  "name": "fredlawl/recursive-decent",
-  "description": "description_text",
+  "name": "fredlawl/sinsql",
+  "description": "A small little language interpreter written in PHP to parse and execute user-defined logic.",
   "minimum-stability": "stable",
-  "license": "mit",
+  "license": "MIT",
   "authors": [
     {
       "name": "Frederick Lawler",
