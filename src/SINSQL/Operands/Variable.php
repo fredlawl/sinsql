@@ -3,9 +3,9 @@
 namespace SINSQL\Operands;
 
 
-use SINSQL\Interfaces\IOperand;
+use SINSQL\Interfaces\ITerm;
 
-class Variable implements IOperand
+class Variable implements ITerm
 {
     public $value;
     

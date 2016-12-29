@@ -2,9 +2,9 @@
 
 namespace SINSQL\Operands;
 
-use SINSQL\Interfaces\IOperand;
+use SINSQL\Interfaces\ITerm;
 
-class Str implements IOperand
+class Str implements ITerm
 {
     public $value;
     

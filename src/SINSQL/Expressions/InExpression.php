@@ -1,11 +1,11 @@
 <?php
 
-namespace SINSQL\Operations;
+namespace SINSQL\Expressions;
 
 
-use SINSQL\Interfaces\IOperand;
+use SINSQL\Interfaces\ITerm;
 
-class InOperation extends Operation implements IOperand
+class InExpression extends Expression
 {
     
     public function evaluate()

@@ -1,13 +1,22 @@
 <?php
 
-namespace SINSQL\Operations;
+namespace SINSQL\Expressions;
 
 
-use SINSQL\ExpressionNode;
-use SINSQL\Interfaces\IOperand;
+use SINSQL\Interfaces\ITerm;
 
-abstract class Operation extends ExpressionNode
+abstract class Expression implements ITerm
 {
+    /**
+     * @var ITerm
+     */
+    protected $left;
+    
+    /**
+     * @var ITerm
+     */
+    protected $right;
+    
     public function isNodeNull()
     {
         return $this->isLeftNodeNull() && $this->isRightNodeNull();
@@ -35,17 +44,17 @@ abstract class Operation extends ExpressionNode
             throw new \Exception("Right node is null.");
     }
     
-    public function setLeft(IOperand $operand)
+    public function setLeft(ITerm $operand)
     {
         $this->left = $operand;
     }
     
-    public function setRight(IOperand $operand)
+    public function setRight(ITerm $operand)
     {
         $this->right = $operand;
     }
     
-    public function setLeftRight(IOperand $left, IOperand $right)
+    public function setLeftRight(ITerm $left, ITerm $right)
     {
         $this->setLeft($left);
         $this->setRight($right);

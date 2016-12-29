@@ -1,13 +1,10 @@
 <?php
 
-namespace SINSQL\Operations;
+namespace SINSQL\Expressions;
 
 
-use SINSQL\Interfaces\IOperand;
-
-class AndOperation extends Operation implements IOperand
+class AndExpression extends Expression
 {
-    
     public function evaluate()
     {
         $this->checkForNulls();

@@ -1,11 +1,9 @@
 <?php
 
-namespace SINSQL\Operations;
+namespace SINSQL\Expressions;
 
 
-use SINSQL\Interfaces\IOperand;
-
-class OrOperation extends Operation implements IOperand
+class OrExpression extends Expression
 {
     public function evaluate()
     {

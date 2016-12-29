@@ -3,7 +3,7 @@
 namespace SINSQL\Interfaces;
 
 
-interface IOperand
+interface ITerm
 {
     public function evaluate();
 }
