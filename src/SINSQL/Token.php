@@ -21,6 +21,7 @@ class Token
     const TXT_COLON = 12;
     const TXT_DOT = 13;
     const TXT_COMMA = 14;
+    const TXT_QUOTE = 15;
     
     const TXT_NUMBER = 100;
     const TXT_CHARACTER = 1001;
@@ -69,7 +70,8 @@ class Token
             self::EXP_GREATERTHANEQUALS => 'GREATER THAN OR IS',
             self::TXT_COLON => ':',
             self::TXT_DOT => '.',
-            self::TXT_COMMA => ','
+            self::TXT_COMMA => ',',
+            self::TXT_QUOTE => '"'
         ];
         
         self::$reverseTokenMap = array_flip(self::$tokenMap);
