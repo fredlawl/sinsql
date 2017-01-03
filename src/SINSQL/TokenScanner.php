@@ -18,7 +18,8 @@ class TokenScanner
     
     private $number = 0;
     private $string = "";
-    private $character = '';
+    private $identifier = '';
+    private $symbol = '';
     
     private $token;
     private $numberOfTokensConsumed = 0;
@@ -34,9 +35,13 @@ class TokenScanner
         if (is_null($this->nextCharacter))
             return Token::EOF;
         
-        // Ignore whitespace
-        while ($this->isWhitespace())
-            $this->nextCharacter();
+        // parse whitespace
+        if ($this->isWhitespace()) {
+            $this->consumeWhitespace();
+            $this->token = Token::TXT_SPACE;
+            $this->numberOfTokensConsumed++;
+            return $this->token;
+        }
         
         // parse a number
         if ($this->isDigit()) {
@@ -56,9 +61,9 @@ class TokenScanner
         
         // parse a character
         if ($this->isAllowableCharacter()) {
-            $this->character = $this->currentCharacter;
-            $this->nextCharacter();
-            $this->token = Token::TXT_CHARACTER;
+//            $this->nextCharacter();
+            $this->symbol = $this->parseSymbol();
+            $this->token = Token::TXT_SYMBOL;
         } else {
             $char = $this->currentCharacter;
             $this->nextCharacter();
@@ -90,9 +95,9 @@ class TokenScanner
         return $this->numberOfTokensConsumed;
     }
     
-    public function character()
+    public function identifier()
     {
-        return $this->character;
+        return $this->identifier;
     }
     
     public function string()
@@ -103,6 +108,11 @@ class TokenScanner
     public function number()
     {
         return $this->number;
+    }
+    
+    public function symbol()
+    {
+        return $this->symbol;
     }
     
     public function parseNumber()
@@ -134,8 +144,29 @@ class TokenScanner
         return $result;
     }
     
+    public function parseSymbol()
+    {
+        $this->nextCharacter();
+        
+        $result = $this->identifier;
+        do {
+            $result = $result . $this->currentCharacter;
+            $this->nextCharacter();
+        } while ($this->isAllowableCharacter());
+        
+        return $result;
+    }
+    
+    private function consumeWhitespace()
+    {
+        do {
+            $this->nextCharacter();
+        } while ($this->isWhitespace());
+    }
+    
     public function nextCharacter()
     {
+        $this->identifier = $this->currentCharacter;
         $this->currentCharacter = $this->nextCharacter;
         $this->nextCharacter = $this->buffer->get();
     }

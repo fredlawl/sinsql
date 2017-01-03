@@ -4,7 +4,6 @@ namespace SINSQL\Expressions;
 
 
 use SINSQL\Interfaces\IComparer;
-use SINSQL\Token;
 
 class ExpressionRegistry
 {
@@ -13,35 +12,35 @@ class ExpressionRegistry
     
     
     /**
-     * @param $token
+     * @param $expression
      * @return Expression
      */
-    public static function getExpression($token)
+    public static function getExpression($expression)
     {
-        self::checkForExpression($token);
-        return new self::$expressionRegistry[$token]();
+        self::checkForExpression($expression);
+        return new self::$expressionRegistry[$expression]();
     }
     
     
     /**
-     * @param $token
+     * @param $expression
      * @param IComparer $comparer
      * @return ComparableExpression
      */
-    public static function getComparableExpression($token, IComparer $comparer)
+    public static function getComparableExpression($expression, IComparer $comparer)
     {
-        self::checkForExpression($token);
-        return new self::$comparableExpressionRegistry[$token]($comparer);
+        self::checkForExpression($expression);
+        return new self::$comparableExpressionRegistry[$expression]($comparer);
     }
     
     
-    private static function checkForExpression($token)
+    private static function checkForExpression($expression)
     {
         self::buildRegistry();
-        if (!isset(self::$expressionRegistry[$token]) || !class_exists(self::$expressionRegistry[$token])) {
+        if (!isset(self::$expressionRegistry[$expression]) || !class_exists(self::$expressionRegistry[$expression])) {
             $prettyToken = null;
-            if (!Token::parseToken($token, $prettyToken)) {
-                throw new \UnexpectedValueException('Token ' . $token . ' does not exist.');
+            if (!ExpressionType::parseExpression($expression, $prettyToken)) {
+                throw new \UnexpectedValueException('Token ' . $expression . ' does not exist.');
             }
         
             throw new \UnexpectedValueException('Expression Registry has no entry for "' . $prettyToken . '"');
@@ -54,19 +53,19 @@ class ExpressionRegistry
             return;
         
         self::$comparableExpressionRegistry = [
-            Token::EXP_EQUALS => '\\SINSQL\\Expressions\\IsExpression',
-            Token::EXP_NOTEQUALS => '\\SINSQL\\Expressions\\IsNotExpression',
-            Token::EXP_GREATERTHAN => '\\SINSQL\\Expressions\\GreaterThanExpression',
-            Token::EXP_GREATERTHANEQUALS => '\\SINSQL\\Expressions\\GreaterThanOrIsExpression',
-            Token::EXP_LESSTHAN => '\\SINSQL\\Expressions\\LesserThanExpression',
-            Token::EXP_LESSTHANEQUALS => '\\SINSQL\\Expressions\\LesserThanOrIsExpression'
+            ExpressionType::EXP_EQUALS => '\\SINSQL\\Expressions\\IsExpression',
+            ExpressionType::EXP_NOTEQUALS => '\\SINSQL\\Expressions\\IsNotExpression',
+            ExpressionType::EXP_GREATERTHAN => '\\SINSQL\\Expressions\\GreaterThanExpression',
+            ExpressionType::EXP_GREATERTHANEQUALS => '\\SINSQL\\Expressions\\GreaterThanOrIsExpression',
+            ExpressionType::EXP_LESSTHAN => '\\SINSQL\\Expressions\\LesserThanExpression',
+            ExpressionType::EXP_LESSTHANEQUALS => '\\SINSQL\\Expressions\\LesserThanOrIsExpression'
         ];
         
         self::$expressionRegistry = [
-            Token::EXP_SEQUENCE => '\\SINSQL\\Expressions\\InExpression',
-            Token::EXP_NOTSEQUENCE => '\\SINSQL\\Expressions\\NotInExpression',
-            Token::EXP_AND => '\\SINSQL\\Expressions\\AndExpression',
-            Token::EXP_OR => '\\SINSQL\\Expressions\\OrExpression'
+            ExpressionType::EXP_SEQUENCE => '\\SINSQL\\Expressions\\InExpression',
+            ExpressionType::EXP_NOTSEQUENCE => '\\SINSQL\\Expressions\\NotInExpression',
+            ExpressionType::EXP_AND => '\\SINSQL\\Expressions\\AndExpression',
+            ExpressionType::EXP_OR => '\\SINSQL\\Expressions\\OrExpression'
         ] + self::$comparableExpressionRegistry;
     }
 }
