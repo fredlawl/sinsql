@@ -18,6 +18,7 @@ class TokenScanner
     
     private $number = 0;
     private $string = "";
+    private $character = '';
     
     private $token;
     private $numberOfTokensConsumed = 0;
@@ -55,6 +56,7 @@ class TokenScanner
         
         // parse a character
         if ($this->isAllowableCharacter()) {
+            $this->character = $this->currentCharacter;
             $this->nextCharacter();
             $this->token = Token::TXT_CHARACTER;
         } else {
@@ -90,7 +92,7 @@ class TokenScanner
     
     public function character()
     {
-        return $this->currentCharacter;
+        return $this->character;
     }
     
     public function string()

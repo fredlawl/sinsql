@@ -18,6 +18,7 @@ class Token
     const EXP_LESSTHANEQUALS = 9;
     const EXP_GREATERTHAN = 10;
     const EXP_GREATERTHANEQUALS = 11;
+    
     const TXT_COLON = 12;
     const TXT_DOT = 13;
     const TXT_COMMA = 14;
