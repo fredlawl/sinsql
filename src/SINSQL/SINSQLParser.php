@@ -2,17 +2,24 @@
 
 namespace SINSQL;
 
+use SINSQL\Interfaces\IBuffer;
+
 class SINSQLParser
 {
     private $cursor;
     private $input;
     private $currentSymbol;
     private $previousSymbol;
-    private $tree;
+    private $tree = null;
     
-    public function __construct()
+    /**
+     * @var Scanner
+     */
+    private $scanner;
+    
+    public function __construct(IBuffer $buffer)
     {
-        $this->tree = null;
+        $this->scanner = new Scanner($buffer);
     }
     
     public function run($input)
