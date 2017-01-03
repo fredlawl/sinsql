@@ -6,7 +6,7 @@ namespace SINSQL;
 use SINSQL\Exceptions\IllegalCharacterException;
 use SINSQL\Interfaces\IBuffer;
 
-class Scanner
+class TokenScanner
 {
     /**
      * @var IBuffer
@@ -125,6 +125,9 @@ class Scanner
             $result = $result . $this->currentCharacter;
             $this->nextCharacter();
         } while (!$this->isQuote());
+    
+        // Proceed to next token to not do infinite loops :p
+        $this->nextCharacter();
         
         return $result;
     }

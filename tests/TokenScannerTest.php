@@ -1,15 +1,15 @@
 <?php
 
 use SINSQL\Interfaces\IBuffer;
-use SINSQL\Scanner;
+use SINSQL\TokenScanner;
 use SINSQL\StringBuffer;
 use SINSQL\Token;
 
 
-class ScannerTest extends PHPUnit_Framework_TestCase
+class TokenScannerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Scanner
+     * @var TokenScanner
      */
     private $scanner;
     
@@ -22,15 +22,15 @@ class ScannerTest extends PHPUnit_Framework_TestCase
     
     public function SetUp()
     {
-        $this->sampleString = "(25 GREATER THAN OR IS 21) OR (1991 LESS THAN OR IS 1995)";
+        $this->sampleString = "(:variable IS \"doomed\") AND (25 GREATER THAN OR IS 21) OR (:var IN (\"Awesome\", \"TEST\", \"Too soon\"))";
         $this->buffer = new StringBuffer($this->sampleString);
-        $this->scanner = new Scanner($this->buffer);
+        $this->scanner = new TokenScanner($this->buffer);
     }
     
     public function testStringConsumesAllCharacters()
     {
         $characters = "\"0987654321`~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()<>,./?:;'][{}\\|\"";
-        $scanner = new Scanner(new StringBuffer($characters));
+        $scanner = new TokenScanner(new StringBuffer($characters));
         while ($scanner->getToken() != Token::EOF)
         {
             
@@ -39,25 +39,6 @@ class ScannerTest extends PHPUnit_Framework_TestCase
         
         $actual = $scanner->string();
         $expected = trim($characters, '"');
-        $this->assertEquals($expected, $actual);
-    }
-    
-    public function testFirstTokenIsLParan()
-    {
-        $actual = $this->scanner->getToken();
-        $expected = Token::TXT_LEFTPARAN;
-        $this->assertEquals($expected, $actual);
-    }
-    
-    public function testNextTokenIsNumber()
-    {
-        $this->scanner->getToken();
-        $actual = $this->scanner->getToken();
-        $expected = Token::TXT_NUMBER;
-        $this->assertEquals($expected, $actual);
-        
-        $expected = 25;
-        $actual = $this->scanner->number();
         $this->assertEquals($expected, $actual);
     }
     
@@ -74,8 +55,8 @@ class ScannerTest extends PHPUnit_Framework_TestCase
     
     public function testSkipNextTokens()
     {
-        $actual = $this->scanner->skipNextTokens(19);
-        $expected = Token::TXT_RIGHTPARAN;
+        $actual = $this->scanner->skipNextTokens(8);
+        $expected = Token::TXT_CHARACTER;
         $this->assertEquals($expected, $actual);
     }
     
