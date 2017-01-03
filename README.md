@@ -20,7 +20,7 @@ This pet project was inspired by a past project where a grammar similar to this 
  => true
 ```
  ```
- :isAwesome IS true OR (:age GREATER THAN OR IS 21 AND (:footballteam IN ("L.A. Rams", "St. Louis Rams", "Rams"))
+ :isAwesome IS true OR (:age GREATER THAN OR IS 21 AND (:footballteam IN ("L.A. Rams", "St. Louis Rams", "Rams")))
  => true
  ``` 
 
