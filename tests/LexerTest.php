@@ -98,7 +98,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
     
     public function testSkipNextTokens()
     {
-        $actual = $this->scanner->skipNextTokens(4);
+        $actual = $this->scanner->skipNextTokens(3);
         $expected = Token::TXT_SYMBOL;
         $this->assertEquals($expected, $actual);
     }

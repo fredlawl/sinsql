@@ -14,8 +14,8 @@ class Lexer
      */
     private $buffer;
     
-    private $nextCharacter = " ";
-    private $currentCharacter = " ";
+    private $nextCharacter = "";
+    private $currentCharacter = "";
     
     private $number = 0;
     private $string = "";
@@ -35,6 +35,12 @@ class Lexer
         // Immediate close if done scanning
         if ($this->buffer->isEOF())
             return Token::EOF;
+        
+        // Advance the buffer to negate the start.
+        if (empty($this->currentCharacter)) {
+            $this->nextCharacter();
+            $this->nextCharacter();
+        }
         
         // parse whitespace
         if ($this->isWhitespace()) {
