@@ -3,7 +3,7 @@
 require_once('../vendor/autoload.php');
 
 use SINSQL\Expressions\ExpressionRegistry;
-use SINSQL\Token;
+use SINSQL\Expressions\ExpressionType;
 
 class OperationRegistryTest extends PHPUnit_Framework_TestCase
 {
@@ -19,7 +19,7 @@ class OperationRegistryTest extends PHPUnit_Framework_TestCase
     
     public function testExpressionRegistryReturnsAndExpresion()
     {
-        $andOperation = ExpressionRegistry::getExpression(Token::EXP_AND);
+        $andOperation = ExpressionRegistry::getExpression(ExpressionType::EXP_AND);
         $this->assertEquals("SINSQL\\Expressions\\AndExpression", get_class($andOperation));
     }
 }

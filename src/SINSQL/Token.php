@@ -5,8 +5,8 @@ namespace SINSQL;
 
 class Token
 {
-    const TXT_LEFTPARAN = '(';
-    const TXT_RIGHTPARAN = ')';
+    const TXT_LEFTPAREN = '(';
+    const TXT_RIGHTPAREN = ')';
     
     const TXT_COLON = ':';
     const TXT_DOT = '.';

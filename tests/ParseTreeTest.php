@@ -3,6 +3,7 @@
 require_once('../vendor/autoload.php');
 
 use SINSQL\Comparers\StringComparer;
+use SINSQL\Expressions\ExpressionType;
 use SINSQL\Operands\Str;
 use SINSQL\Operands\Variable;
 use SINSQL\Expressions\ExpressionRegistry;
@@ -12,7 +13,7 @@ class ParseTreeTest extends PHPUnit_Framework_TestCase
 {
     public function testStringEqualsOperation()
     {
-        $tree = ExpressionRegistry::getComparableExpression(Token::EXP_EQUALS, new StringComparer());
+        $tree = ExpressionRegistry::getComparableExpression(ExpressionType::EXP_EQUALS, new StringComparer());
         
         $tree->setLeftRight(new Str("test"), new Str("test"));
         $this->assertTrue($tree->evaluate());
@@ -23,7 +24,7 @@ class ParseTreeTest extends PHPUnit_Framework_TestCase
     
     public function testNumberEqualsOperation()
     {
-        $tree = ExpressionRegistry::getExpression(Token::EXP_EQUALS);
+        $tree = ExpressionRegistry::getExpression(ExpressionType::EXP_EQUALS);
         
         $tree->setLeftRight(new Variable(2), new Variable(3));
         $this->assertFalse($tree->evaluate());
@@ -34,12 +35,12 @@ class ParseTreeTest extends PHPUnit_Framework_TestCase
     
     public function testComplexTreeAnd()
     {
-        $tree = ExpressionRegistry::getExpression(Token::EXP_AND);
+        $tree = ExpressionRegistry::getExpression(ExpressionType::EXP_AND);
         
-        $numEqualOperation = ExpressionRegistry::getExpression(Token::EXP_EQUALS);
+        $numEqualOperation = ExpressionRegistry::getExpression(ExpressionType::EXP_EQUALS);
         $numEqualOperation->setLeftRight(new Variable(2), new Variable(2));
         
-        $strEqualOperation = ExpressionRegistry::getComparableExpression(Token::EXP_EQUALS, new StringComparer());
+        $strEqualOperation = ExpressionRegistry::getComparableExpression(ExpressionType::EXP_EQUALS, new StringComparer());
         $strEqualOperation->setLeftRight(new Str("test"), new Str("test"));
         
         $tree->setLeftRight($numEqualOperation, $strEqualOperation);
@@ -49,12 +50,12 @@ class ParseTreeTest extends PHPUnit_Framework_TestCase
     
     public function testComplexTreeOr()
     {
-        $tree = ExpressionRegistry::getExpression(Token::EXP_OR);
+        $tree = ExpressionRegistry::getExpression(ExpressionType::EXP_OR);
     
-        $numEqualOperation = ExpressionRegistry::getExpression(Token::EXP_EQUALS);
+        $numEqualOperation = ExpressionRegistry::getExpression(ExpressionType::EXP_EQUALS);
         $numEqualOperation->setLeftRight(new Variable(2), new Variable(4));
     
-        $strEqualOperation = ExpressionRegistry::getComparableExpression(Token::EXP_EQUALS, new StringComparer());
+        $strEqualOperation = ExpressionRegistry::getComparableExpression(ExpressionType::EXP_EQUALS, new StringComparer());
         $strEqualOperation->setLeftRight(new Str("TEST"), new Str("test"));
     
         $tree->setLeftRight($numEqualOperation, $strEqualOperation);
@@ -64,7 +65,7 @@ class ParseTreeTest extends PHPUnit_Framework_TestCase
     
     public function testNonsensicalTreeAnd()
     {
-        $tree = ExpressionRegistry::getExpression(Token::EXP_AND);
+        $tree = ExpressionRegistry::getExpression(ExpressionType::EXP_AND);
         
         // This should evaluate to true because 1 > 0 => true, and filled string set to "true" boolvals to true
         // (true && true)

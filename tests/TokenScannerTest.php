@@ -22,7 +22,7 @@ class TokenScannerTest extends PHPUnit_Framework_TestCase
     
     public function SetUp()
     {
-        $this->sampleString = "(:variable IS \"doomed\") AND (25 GREATER THAN OR IS 21) OR (:var IN (\"Awesome\", \"TEST\", \"Too soon\"))";
+        $this->sampleString = "(:variable IS \"doomed\") AND (25 GREATER THAN OR IS :kool) OR (:var IN (\"Awesome\", \"TEST\", \"Too soon\"))";
         $this->buffer = new StringBuffer($this->sampleString);
         $this->scanner = new TokenScanner($this->buffer);
     }
@@ -55,8 +55,8 @@ class TokenScannerTest extends PHPUnit_Framework_TestCase
     
     public function testSkipNextTokens()
     {
-        $actual = $this->scanner->skipNextTokens(8);
-        $expected = Token::TXT_CHARACTER;
+        $actual = $this->scanner->skipNextTokens(4);
+        $expected = Token::TXT_SYMBOL;
         $this->assertEquals($expected, $actual);
     }
     
@@ -65,28 +65,24 @@ class TokenScannerTest extends PHPUnit_Framework_TestCase
         while (($tok = $this->scanner->getToken()) != Token::EOF)
         {
             $holder = null;
-            $tokenname = '';
+            $tokenname = Token::stringify($tok);
             switch($tok)
             {
                 case Token::TXT_STRING:
-                    $tokenname = 'STRING';
                     $holder = $this->scanner->string();
                     break;
                 case Token::TXT_NUMBER:
-                    $tokenname = 'NUMBER';
                     $holder = $this->scanner->number();
                     break;
-                case Token::TXT_CHARACTER:
-                    $tokenname = 'CHAR';
-                    $holder = $this->scanner->character();
+                case Token::TXT_SYMBOL:
+                    $holder = $this->scanner->symbol();
                     break;
                 default:
                     Token::parseToken($tok, $holder);
-                    $tokenname = $tok;
                     break;
             }
             
-            print_r($tokenname . " " . $holder);
+            echo $tokenname . " " . $holder;
             echo "\n";
         }
         
