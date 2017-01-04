@@ -13,13 +13,13 @@ class SINSQLParser
     private $tree = null;
     
     /**
-     * @var TokenScanner
+     * @var Lexer
      */
     private $scanner;
     
     public function __construct(IBuffer $buffer)
     {
-        $this->scanner = new TokenScanner($buffer);
+        $this->scanner = new Lexer($buffer);
     }
     
     public function run($input)

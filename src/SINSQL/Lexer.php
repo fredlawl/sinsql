@@ -3,10 +3,11 @@
 namespace SINSQL;
 
 
+use SINSQL\Exceptions\FailedToParseException;
 use SINSQL\Exceptions\IllegalCharacterException;
 use SINSQL\Interfaces\IBuffer;
 
-class TokenScanner
+class Lexer
 {
     /**
      * @var IBuffer
@@ -61,7 +62,6 @@ class TokenScanner
         
         // parse a character
         if ($this->isAllowableCharacter()) {
-//            $this->nextCharacter();
             $this->symbol = $this->parseSymbol();
             $this->token = Token::TXT_SYMBOL;
         } else {
@@ -130,16 +130,27 @@ class TokenScanner
     {
         // To ignore that first quote
         $this->nextCharacter();
+    
+        $hasClosingQuote = false;
+        $line = $this->buffer->currentLine();
+        $column = $this->buffer->currentColumn();
         
         $result = "";
         
         do {
             $result = $result . $this->currentCharacter;
             $this->nextCharacter();
-        } while (!$this->isQuote());
+        } while (!$this->isQuote() && !$this->buffer->isEOF());
     
+        if ($this->isQuote())
+            $hasClosingQuote = true;
+        
+        if ($this->buffer->isEOF() && !$hasClosingQuote)
+            throw new FailedToParseException("Missing closing quotation mark", $line, $column);
+        
         // Proceed to next token to not do infinite loops :p
         $this->nextCharacter();
+        
         
         return $result;
     }

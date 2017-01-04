@@ -12,11 +12,13 @@ class StringBuffer implements IBuffer
     private $line = "";
     private $input;
     private $eof;
+    private $isEOF;
     
     public function __construct($input)
     {
         $this->input = explode("\n", $input);
         $this->eof = count($this->input);
+        $this->isEOF = false;
     }
     
     public function get()
@@ -25,8 +27,10 @@ class StringBuffer implements IBuffer
         $lineLength = strlen($this->line);
         if ($this->columnNumber >= $lineLength) {
             
-            if ($this->lineNumber == $this->eof)
+            if ($this->lineNumber == $this->eof) {
+                $this->isEOF = true;
                 return null;
+            }
             
             $line = $this->input[$this->lineNumber];
             $this->columnNumber = 0;
@@ -56,5 +60,10 @@ class StringBuffer implements IBuffer
     public function currentColumn()
     {
         return $this->columnNumber - 1;
+    }
+    
+    public function isEOF()
+    {
+        return $this->isEOF;
     }
 }
