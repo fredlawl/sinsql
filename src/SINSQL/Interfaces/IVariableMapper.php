@@ -12,7 +12,8 @@ namespace SINSQL\Interfaces;
 interface IVariableMapper
 {
     /**
-     * @return array
+     * @param $variableKey
+     * @return mixed; null if variable cannot be mapped.
      */
-    public function map();
+    public function map($variableKey);
 }

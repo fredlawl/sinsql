@@ -2,6 +2,9 @@
 
 namespace SINSQL;
 
+use SINSQL\Exceptions\FailedToParseException;
+use SINSQL\Exceptions\SINQLException;
+use SINSQL\Exceptions\TokenMismatchException;
 use SINSQL\Interfaces\IBuffer;
 use SINSQL\Interfaces\ITerm;
 use SINSQL\Interfaces\IVariableMapper;
@@ -11,7 +14,7 @@ class SINSQLParser
     /**
      * @var Lexer
      */
-    private $scanner;
+    private $lexer;
     
     /**
      * @var IVariableMapper
@@ -23,20 +26,35 @@ class SINSQLParser
      */
     private $parseTree;
     
-    public function __construct(IBuffer $buffer, IVariableMapper $variableMapper)
+    private $nextToken = Token::EOF;
+    private $currentToken = null;
+    
+    
+    public function __construct(IBuffer $buffer, IVariableMapper $variableMapper = null)
     {
-        $this->scanner = new Lexer($buffer);
+        $this->lexer = new Lexer($buffer);
         $this->variableMapper = $variableMapper;
         $this->parseTree = null;
     }
     
     
     /**
-     * @return ITerm
+     * @return bool
+     * @throws SINQLException
      */
     public function parse()
     {
-        return $this->parseTree;
+        $this->advanceToken();
+        
+        if ($this->matches(Token::EOF))
+            return false;
+        
+        $this->expression();
+        
+        if (is_null($this->parseTree))
+            return false;
+        
+        return boolval($this->parseTree->evaluate());
     }
     
     
@@ -45,5 +63,52 @@ class SINSQLParser
         
     }
     
+    private function variable()
+    {
+        
+    }
     
+    private function operator()
+    {
+        
+    }
+    
+    private function sequence()
+    {
+        
+    }
+    
+    private function expected($token)
+    {
+        if (!$this->matches($token))
+            throw new TokenMismatchException($token, $this->nextToken());
+        return true;
+    }
+    
+    private function matches($token)
+    {
+        return ($token == $this->nextToken());
+    }
+    
+    private function currentTokenMatches($token)
+    {
+        return ($this->currentToken() == $token);
+    }
+    
+    private function advanceToken()
+    {
+        $this->currentToken = $this->nextToken;
+        $this->nextToken = $this->lexer->getToken();
+    }
+    
+    
+    private function currentToken()
+    {
+        return $this->currentToken;
+    }
+    
+    private function nextToken()
+    {
+        return $this->nextToken;
+    }
 }
