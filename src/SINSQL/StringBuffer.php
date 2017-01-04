@@ -16,15 +16,16 @@ class StringBuffer implements IBuffer
     
     public function __construct($input)
     {
+        $this->isEOF = empty($input);
         $this->input = explode("\n", $input);
         $this->eof = count($this->input);
-        $this->isEOF = false;
     }
     
     public function get()
     {
         $this->columnNumber++;
         $lineLength = strlen($this->line);
+        
         if ($this->columnNumber >= $lineLength) {
             
             if ($this->lineNumber == $this->eof) {

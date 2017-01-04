@@ -1,15 +1,17 @@
 <?php
 
+use SINSQL\Exceptions\FailedToParseException;
+use SINSQL\Exceptions\IllegalCharacterException;
 use SINSQL\Interfaces\IBuffer;
-use SINSQL\TokenScanner;
+use SINSQL\Lexer;
 use SINSQL\StringBuffer;
 use SINSQL\Token;
 
 
-class TokenScannerTest extends PHPUnit_Framework_TestCase
+class LexerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var TokenScanner
+     * @var Lexer
      */
     private $scanner;
     
@@ -24,13 +26,54 @@ class TokenScannerTest extends PHPUnit_Framework_TestCase
     {
         $this->sampleString = "(:variable IS \"doomed\") AND (25 GREATER THAN OR IS :kool) OR (:var IN (\"Awesome\", \"TEST\", \"Too soon\"))";
         $this->buffer = new StringBuffer($this->sampleString);
-        $this->scanner = new TokenScanner($this->buffer);
+        $this->scanner = new Lexer($this->buffer);
+    }
+    
+    public function testStatementIsEmpty()
+    {
+        $statement = "";
+        $scanner = new Lexer(new StringBuffer($statement));
+        $actual = $scanner->getToken();
+        $expected = Token::EOF;
+        $this->assertEquals($expected, $actual);
+    }
+    
+    public function testExceptionThrownOnParse()
+    {
+        $characters = "(:variable IS \"doomed\"^) AND (25 GREATER THAN OR IS :kool)";
+        $scanner = new Lexer(new StringBuffer($characters));
+        
+        try{
+            while ($scanner->getToken() != Token::EOF)
+            {
+        
+            }
+            $this->assertTrue(false, "An exception should be thrown.");
+        } catch (IllegalCharacterException $e) {
+            $this->assertTrue(true);
+        }
+    }
+    
+    public function testExceptionThrownOnUnmatchingQuotes()
+    {
+        $characters = "(:variable IS \"doomed\"\") AND (25 GREATER THAN OR IS :kool)";
+        $scanner = new Lexer(new StringBuffer($characters));
+
+        try {
+            while ($scanner->getToken() != Token::EOF)
+            {
+
+            }
+            $this->assertTrue(false, "An exception should be thrown.");
+        } catch (FailedToParseException $e) {
+            $this->assertTrue(true);
+        }
     }
     
     public function testStringConsumesAllCharacters()
     {
         $characters = "\"0987654321`~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()<>,./?:;'][{}\\|\"";
-        $scanner = new TokenScanner(new StringBuffer($characters));
+        $scanner = new Lexer(new StringBuffer($characters));
         while ($scanner->getToken() != Token::EOF)
         {
             

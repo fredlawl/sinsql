@@ -33,7 +33,7 @@ class Lexer
     public function getToken()
     {
         // Immediate close if done scanning
-        if (is_null($this->nextCharacter))
+        if ($this->buffer->isEOF())
             return Token::EOF;
         
         // parse whitespace
@@ -95,11 +95,6 @@ class Lexer
         return $this->numberOfTokensConsumed;
     }
     
-    public function identifier()
-    {
-        return $this->identifier;
-    }
-    
     public function string()
     {
         return $this->string;
@@ -146,11 +141,10 @@ class Lexer
             $hasClosingQuote = true;
         
         if ($this->buffer->isEOF() && !$hasClosingQuote)
-            throw new FailedToParseException("Missing closing quotation mark", $line, $column);
+            throw new FailedToParseException("Expected closing quotation mark", $line, $column);
         
         // Proceed to next token to not do infinite loops :p
         $this->nextCharacter();
-        
         
         return $result;
     }
@@ -184,17 +178,17 @@ class Lexer
     
     public function isWhitespace()
     {
-        return preg_match("/\s/i", $this->currentCharacter) > 0;
+        return preg_match("/\s/", $this->currentCharacter) > 0;
     }
     
     public function isDigit()
     {
-        return preg_match("/[0-9]+/i", $this->currentCharacter) > 0;
+        return preg_match("/[0-9]/", $this->currentCharacter) > 0;
     }
     
     public function isAllowableCharacter()
     {
-        return preg_match("/[a-zA-Z]+/i", $this->currentCharacter) > 0;
+        return preg_match("/[a-zA-Z]/", $this->currentCharacter) > 0;
     }
     
     public function isQuote()

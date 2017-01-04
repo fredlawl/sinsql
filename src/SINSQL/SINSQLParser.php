@@ -3,53 +3,46 @@
 namespace SINSQL;
 
 use SINSQL\Interfaces\IBuffer;
+use SINSQL\Interfaces\ITerm;
+use SINSQL\Interfaces\IVariableMapper;
 
 class SINSQLParser
 {
-    private $cursor;
-    private $input;
-    private $currentSymbol;
-    private $previousSymbol;
-    private $tree = null;
-    
     /**
      * @var Lexer
      */
     private $scanner;
     
-    public function __construct(IBuffer $buffer)
+    /**
+     * @var IVariableMapper
+     */
+    private $variableMapper;
+    
+    /**
+     * @var ITerm
+     */
+    private $parseTree;
+    
+    public function __construct(IBuffer $buffer, IVariableMapper $variableMapper)
     {
         $this->scanner = new Lexer($buffer);
+        $this->variableMapper = $variableMapper;
+        $this->parseTree = null;
     }
     
-    public function run($input)
+    
+    /**
+     * @return ITerm
+     */
+    public function parse()
     {
-        $this->input = $input;
-        $this->cursor = 0;
-        $this->expression();
-        
-//        $buffer = "";
-//        $count = strlen($this->input);
-//        self::$cursor = 0;
-//        while (self::$cursor < $count) {
-//            if ($this->isWhitespace($this->input[self::$cursor])) {
-//                ++self::$cursor;
-//                continue;
-//            }
-//
-//            // consume
-//            $buffer .= $this->input[self::$cursor];
-//            $this->consume($buffer);
-//            ++self::$cursor;
-//        }
-//
-//        return $buffer;
-        
+        return $this->parseTree;
     }
+    
     
     private function expression()
     {
-        // TODO: Implement parseExpression() method.
+        
     }
     
     
