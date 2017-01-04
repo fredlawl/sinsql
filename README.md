@@ -7,6 +7,9 @@ A small little language interpreter written in PHP to parse and execute user-def
 This pet project was inspired by a past project where a grammar similar to this was needed to conditionally render content on site based on certain user-defined criteria.
 
 ## Examples
+
+>Results will always be false unless proven true.
+
 ```
 "text" IS "TEXT"
 => true
