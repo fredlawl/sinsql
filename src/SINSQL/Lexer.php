@@ -116,7 +116,7 @@ class Lexer
         return $this->symbol;
     }
     
-    public function parseNumber()
+    private function parseNumber()
     {
         $result = 0;
         do {
@@ -127,7 +127,7 @@ class Lexer
         return $result;
     }
     
-    public function parseString()
+    private function parseString()
     {
         // To ignore that first quote
         $this->nextCharacter();
@@ -155,7 +155,7 @@ class Lexer
         return $result;
     }
     
-    public function parseSymbol()
+    private function parseSymbol()
     {
         $this->nextCharacter();
         
@@ -175,29 +175,29 @@ class Lexer
         } while ($this->isWhitespace());
     }
     
-    public function nextCharacter()
+    private function nextCharacter()
     {
         $this->identifier = $this->currentCharacter;
         $this->currentCharacter = $this->nextCharacter;
         $this->nextCharacter = $this->buffer->get();
     }
     
-    public function isWhitespace()
+    private function isWhitespace()
     {
         return preg_match("/\s/", $this->currentCharacter) > 0;
     }
     
-    public function isDigit()
+    private function isDigit()
     {
         return preg_match("/[0-9]/", $this->currentCharacter) > 0;
     }
     
-    public function isAllowableCharacter()
+    private function isAllowableCharacter()
     {
         return preg_match("/[a-zA-Z]/", $this->currentCharacter) > 0;
     }
     
-    public function isQuote()
+    private function isQuote()
     {
         return $this->currentCharacter == '"';
     }
