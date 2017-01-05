@@ -6,13 +6,12 @@ namespace SINSQL\Exceptions;
 
 class FailedToParseException extends SINQLException
 {
-    public function __construct($message, $lineNumber, $column)
+    public function __construct($message, $lineColumn)
     {
         $message = sprintf(
-            "%s starting line %d:%d",
+            "%s starting line %s",
             $message,
-            $lineNumber,
-            $column
+            $lineColumn
         );
         parent::__construct($message);
     }

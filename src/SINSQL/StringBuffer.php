@@ -55,7 +55,7 @@ class StringBuffer implements IBuffer
     
     public function currentLine()
     {
-        return $this->lineNumber - 1;
+        return $this->lineNumber;
     }
     
     public function currentColumn()
@@ -66,5 +66,10 @@ class StringBuffer implements IBuffer
     public function isEOF()
     {
         return $this->isEOF;
+    }
+    
+    public function displayLineColumn()
+    {
+        return $this->currentLine() . ":" . $this->currentColumn();
     }
 }

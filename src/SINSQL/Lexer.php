@@ -77,8 +77,8 @@ class Lexer
             if (!Token::getToken($char, $this->token)) {
                 throw new IllegalCharacterException(
                     $char,
-                    $this->buffer->currentLine(),
-                    $this->buffer->currentColumn());
+                    $this->lineColumn()
+                );
             }
         }
         
@@ -133,8 +133,7 @@ class Lexer
         $this->nextCharacter();
     
         $hasClosingQuote = false;
-        $line = $this->buffer->currentLine();
-        $column = $this->buffer->currentColumn();
+        $lineColumn = $this->lineColumn();
         
         $result = "";
         
@@ -147,7 +146,7 @@ class Lexer
             $hasClosingQuote = true;
         
         if ($this->buffer->isEOF() && !$hasClosingQuote)
-            throw new FailedToParseException("Expected closing quotation mark", $line, $column);
+            throw new FailedToParseException("Expected closing quotation mark", $lineColumn);
         
         // Proceed to next token to not do infinite loops :p
         $this->nextCharacter();
@@ -200,5 +199,10 @@ class Lexer
     private function isQuote()
     {
         return $this->currentCharacter == '"';
+    }
+    
+    public function lineColumn()
+    {
+        return $this->buffer->displayLineColumn();
     }
 }

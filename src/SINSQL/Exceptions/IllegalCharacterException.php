@@ -5,13 +5,12 @@ namespace SINSQL\Exceptions;
 
 class IllegalCharacterException extends SINQLException
 {
-    public function __construct($character, $lineNumber, $column)
+    public function __construct($character, $lineColumn)
     {
         $message = sprintf(
-            "Illegal character '%s' on line %d:%d",
+            "Illegal character '%s' on line %s.",
             $character,
-            $lineNumber,
-            $column
+            $lineColumn
         );
         parent::__construct($message);
     }

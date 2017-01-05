@@ -8,6 +8,7 @@ use SINSQL\Exceptions\TokenMismatchException;
 use SINSQL\Interfaces\IBuffer;
 use SINSQL\Interfaces\ITerm;
 use SINSQL\Interfaces\IVariableMapper;
+use SINSQL\Operands\Variable;
 
 class SINSQLParser
 {
@@ -21,11 +22,6 @@ class SINSQLParser
      */
     private $variableMapper;
     
-    /**
-     * @var ITerm
-     */
-    private $parseTree;
-    
     private $nextToken = Token::EOF;
     private $currentToken = null;
     
@@ -34,7 +30,6 @@ class SINSQLParser
     {
         $this->lexer = new Lexer($buffer);
         $this->variableMapper = $variableMapper;
-        $this->parseTree = null;
     }
     
     
@@ -44,23 +39,89 @@ class SINSQLParser
      */
     public function parse()
     {
-        $this->advanceToken();
+        $tree = $this->generateParseTree();
         
-        if ($this->matches(Token::EOF))
+        if (is_null($tree))
             return false;
         
-        $this->expression();
-        
-        if (is_null($this->parseTree))
-            return false;
-        
-        return boolval($this->parseTree->evaluate());
+        return boolval($tree->evaluate());
     }
     
     
+    /**
+     * @return ITerm
+     */
+    public function generateParseTree()
+    {
+        $this->advanceToken();
+        if ($this->matches(Token::EOF))
+            return null;
+        
+        return $this->expression();
+    }
+    
+    
+    /**
+     * @return ITerm
+     */
     private function expression()
     {
+        $this->advanceToken();
+        return $this->left();
+    }
+    
+    
+    /**
+     * @return ITerm
+     */
+    private function left()
+    {
+        echo Token::stringify($this->currentToken()) . ' next: ' . Token::stringify($this->nextToken()) . "\n";
         
+        $left = null;
+        if (
+            $this->currentTokenMatches(Token::TXT_COLON) ||
+            $this->currentTokenMatches(Token::TXT_NUMBER) ||
+            $this->currentTokenMatches(Token::TXT_STRING)
+        ) {
+            $left = $this->term();
+        } else {
+            if (!$this->isEOF())
+                $left = $this->expression();
+        }
+        
+        $this->advanceToken();
+        return $left;
+    }
+    
+    /**
+     * @return ITerm
+     * @throws SINQLException
+     */
+    private function term()
+    {
+        $return = null;
+        if ($this->currentTokenMatches(Token::TXT_COLON)) {
+            $this->expected(Token::TXT_SYMBOL);
+            $this->advanceToken();
+            $return = new Variable($this->lexer->symbol());
+        }
+        
+        if ($this->currentTokenMatches(Token::TXT_NUMBER)) {
+            // TODO: Change to a different type.
+            $return = new Variable($this->lexer->number());
+        }
+    
+        if ($this->currentTokenMatches(Token::TXT_STRING)) {
+            $return = new Variable($this->lexer->string());
+        }
+        
+        if (is_null($return)) {
+            throw new SINQLException("Invalid call to function " . __CLASS__ . "::term().");
+        }
+        
+        $this->advanceToken();
+        return $return;
     }
     
     private function variable()
@@ -81,7 +142,7 @@ class SINSQLParser
     private function expected($token)
     {
         if (!$this->matches($token))
-            throw new TokenMismatchException($token, $this->nextToken());
+            throw new TokenMismatchException($token, $this->nextToken(), $this->lexer->lineColumn());
         return true;
     }
     
@@ -110,5 +171,10 @@ class SINSQLParser
     private function nextToken()
     {
         return $this->nextToken;
+    }
+    
+    private function isEOF()
+    {
+        return ($this->currentToken() == Token::EOF);
     }
 }

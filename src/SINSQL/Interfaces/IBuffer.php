@@ -15,5 +15,6 @@ interface IBuffer
     public function reset();
     public function currentLine();
     public function currentColumn();
+    public function displayLineColumn();
     public function isEOF();
 }
