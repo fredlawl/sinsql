@@ -76,8 +76,6 @@ class SINSQLParser
      */
     private function left()
     {
-        echo Token::stringify($this->currentToken()) . ' next: ' . Token::stringify($this->nextToken()) . "\n";
-        
         $left = null;
         if (
             $this->currentTokenMatches(Token::TXT_COLON) ||
@@ -102,9 +100,7 @@ class SINSQLParser
     {
         $return = null;
         if ($this->currentTokenMatches(Token::TXT_COLON)) {
-            $this->expected(Token::TXT_SYMBOL);
-            $this->advanceToken();
-            $return = new Variable($this->lexer->symbol());
+            $return = $this->variable();
         }
         
         if ($this->currentTokenMatches(Token::TXT_NUMBER)) {
@@ -124,9 +120,24 @@ class SINSQLParser
         return $return;
     }
     
+    
+    /**
+     * @return Variable
+     * @throws SINQLException
+     */
     private function variable()
     {
+        $this->expected(Token::TXT_SYMBOL);
+        $this->advanceToken();
+        $symbol = $this->lexer->symbol();
+    
+        if (is_null($this->variableMapper)) {
+            $message = sprintf("Unable to locate variable mapper. '%s' could not be mapped.", $symbol);
+            throw new SINQLException($message);
+        }
         
+        $value = $this->variableMapper->map($symbol);
+        return new Variable($value);
     }
     
     private function operator()
