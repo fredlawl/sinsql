@@ -13,7 +13,7 @@ use SINSQL\Interfaces\ITerm;
 use SINSQL\Interfaces\IVariableMapper;
 use SINSQL\Operands\Variable;
 
-class SINSQLParser
+class SINSQLRuntime
 {
     /**
      * @var Lexer

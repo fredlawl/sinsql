@@ -4,11 +4,11 @@ use SINSQL\Exceptions\FailedToParseException;
 use SINSQL\Exceptions\SINQLException;
 use SINSQL\Exceptions\TokenMismatchException;
 use SINSQL\Interfaces\IVariableMapper;
-use SINSQL\SINSQLParser;
+use SINSQL\SINSQLRuntime;
 use SINSQL\StringBuffer;
 
 
-class SINSQLParserTest extends PHPUnit_Framework_TestCase
+class SINSQLRuntimeTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var IVariableMapper
@@ -28,14 +28,14 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
     
     public function testParseReturnsFalseOnEmptyInput()
     {
-        $parser = new SINSQLParser(new StringBuffer(""));
+        $parser = new SINSQLRuntime(new StringBuffer(""));
         $this->assertFalse($parser->parse());
     }
     
     public function testTokenMismatch()
     {
         try {
-            $parser = new SINSQLParser(new StringBuffer("::somevar"));
+            $parser = new SINSQLRuntime(new StringBuffer("::somevar"));
             $parser->generateParseTree()->evaluate();
             $this->assertTrue(false, "This test should've failed");
         } catch (TokenMismatchException $e) {
@@ -46,7 +46,7 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
     public function testInvalidExpressionThrowsError()
     {
         $expected = "(12 GOOP 12)";
-        $parser = new SINSQLParser(new StringBuffer($expected));
+        $parser = new SINSQLRuntime(new StringBuffer($expected));
         
         try {
             $parser->generateParseTree();
@@ -58,7 +58,7 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
     
     public function testGarbage()
     {
-        $parser = new SINSQLParser(new StringBuffer("garbage"));
+        $parser = new SINSQLRuntime(new StringBuffer("garbage"));
         try {
             $parser->generateParseTree();
             $this->assertTrue(false, "This should not be reached.");
@@ -66,7 +66,7 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(true);
         }
     
-        $parser = new SINSQLParser(new StringBuffer("1 AND"));
+        $parser = new SINSQLRuntime(new StringBuffer("1 AND"));
         try {
             $parser->generateParseTree();
             $this->assertTrue(false, "This should not be reached.");
@@ -74,7 +74,7 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(true);
         }
     
-        $parser = new SINSQLParser(new StringBuffer("1 AND yuck"));
+        $parser = new SINSQLRuntime(new StringBuffer("1 AND yuck"));
         try {
             $parser->generateParseTree();
             $this->assertTrue(false, "This should not be reached.");
@@ -82,7 +82,7 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(true);
         }
         
-        $parser = new SINSQLParser(new StringBuffer("1234"));
+        $parser = new SINSQLRuntime(new StringBuffer("1234"));
         try {
             $parser->generateParseTree();
             $this->assertTrue(false, "This should not be reached.");
@@ -94,7 +94,7 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
     public function testNumberEquality()
     {
         $expected = "12 IS 12";
-        $parser = new SINSQLParser(new StringBuffer($expected));
+        $parser = new SINSQLRuntime(new StringBuffer($expected));
         $this->assertTrue($parser->generateParseTree()->evaluate());
     }
     
@@ -115,7 +115,7 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
     {
 //        $expected = "(12 IS 12) AND ((\"tree\" IS \"TrEe\") AND (13 IS 13))";
         $expected = "(12 IS 12) AND (\"tree\" IS \"tree\")";
-        $parser = new SINSQLParser(new StringBuffer($expected));
+        $parser = new SINSQLRuntime(new StringBuffer($expected));
         $tree = $parser->generateParseTree();
         $this->assertTrue($tree->evaluate());
     }
@@ -123,7 +123,7 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
     public function testNestedExpressions()
     {
         $expected = "(\"Bob\" IS \"bob\") OR ((12 IS 12) AND (\"tree\" IS \"tree\"))";
-        $parser = new SINSQLParser(new StringBuffer($expected));
+        $parser = new SINSQLRuntime(new StringBuffer($expected));
         $tree = $parser->generateParseTree();
         var_dump($tree);
         $this->assertTrue($tree->evaluate());
