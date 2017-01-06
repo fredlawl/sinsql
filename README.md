@@ -23,7 +23,7 @@ This pet project was inspired by a past project where a grammar similar to this 
  => true
 ```
  ```
- (:isAwesome IS true) OR ((:age GREATER THAN OR IS 21) AND (:footballteam IN ("L.A. Rams", "St. Louis Rams", "Rams")))
+ (:isAwesome IS true) OR ((:age GREATER THAN OR IS 21) AND :footballteam IN ("L.A. Rams", "St. Louis Rams", "Rams"))
  => true
  ``` 
 
@@ -32,8 +32,8 @@ This pet project was inspired by a past project where a grammar similar to this 
 expression = left, operator, right;
 left = term | "(", expression, ")";
 right = term | sequence | "(", expression, ")";
-operator = "AND" | "OR" | "IS" | "IS NOT" | "IN" | "NOT IN" | "LESS THAN" | "GREATER THAN" | "LESS THAN OR IS" | "GREATER THAN OR IS";
-sequence = "(", { ( term, "," ) }, -",", ")"
+operator = "AND" | "OR" | "IS" | "IS NOT" | "LESS THAN" | "GREATER THAN" | "LESS THAN OR IS" | "GREATER THAN OR IS";
+sequence = ( "IN" | "NOT IN" ), " ", "(", { ( term, "," ) }, -",", ")"
 term = number | string | variable;
 string = '"', { ( letter | symbol | number ) -'"' }, '"';
 variable = ":", { letter };
