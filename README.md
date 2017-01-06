@@ -19,7 +19,7 @@ This pet project was inspired by a past project where a grammar similar to this 
  => false
 ``` 
 ```
-25 GREATER THAN OR IS 21 OR 1991 LESS THAN OR IS 1995
+(25 GREATER THAN OR IS 21) OR (1991 LESS THAN OR IS 1995)
  => true
 ```
  ```
