@@ -3,6 +3,7 @@
 namespace SINSQL\Expressions;
 
 
+use SINSQL\Exceptions\NotImplementedException;
 use SINSQL\Interfaces\ICanCompare;
 use SINSQL\Interfaces\IComparer;
 
@@ -16,6 +17,6 @@ class LessThanOrIsExpression extends ComparableExpression
     
     public function doCompare()
     {
-        // TODO: Implement doCompare() method.
+        throw new NotImplementedException();
     }
 }

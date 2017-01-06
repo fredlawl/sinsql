@@ -3,11 +3,13 @@
 namespace SINSQL\Expressions;
 
 
+use SINSQL\Exceptions\NotImplementedException;
+
 class NotInExpression extends Expression
 {
     
     public function evaluate()
     {
-        // TODO: Implement evaluate() method.
+        throw new NotImplementedException();
     }
 }
