@@ -25,6 +25,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
     public function SetUp()
     {
         $this->sampleString = "(:variable IS \"doomed\") AND (25 GREATER THAN OR IS :kool) OR (:var IN (\"Awesome\", \"TEST\", \"Too soon\"))";
+//        $this->sampleString = "12 IS 12";
         $this->buffer = new StringBuffer($this->sampleString);
         $this->scanner = new Lexer($this->buffer);
     }

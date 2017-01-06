@@ -9,7 +9,7 @@ class FailedToParseException extends SINQLException
     public function __construct($message, $lineColumn)
     {
         $message = sprintf(
-            "%s starting line %s",
+            "%s near line %s",
             $message,
             $lineColumn
         );

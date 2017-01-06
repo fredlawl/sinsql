@@ -5,6 +5,9 @@ namespace SINSQL;
 use SINSQL\Exceptions\FailedToParseException;
 use SINSQL\Exceptions\SINQLException;
 use SINSQL\Exceptions\TokenMismatchException;
+use SINSQL\Expressions\Expression;
+use SINSQL\Expressions\ExpressionRegistry;
+use SINSQL\Expressions\ExpressionType;
 use SINSQL\Interfaces\IBuffer;
 use SINSQL\Interfaces\ITerm;
 use SINSQL\Interfaces\IVariableMapper;
@@ -63,11 +66,27 @@ class SINSQLParser
     
     /**
      * @return ITerm
+     * @throws FailedToParseException
      */
     private function expression()
     {
         $this->advanceToken();
-        return $this->left();
+        if ($this->currentTokenMatches(Token::TXT_LEFTPAREN) || $this->currentTokenMatches(Token::TXT_RIGHTPAREN))
+            return $this->expression();
+        
+        $left = $this->left();
+        
+        $this->expected(Token::TXT_SYMBOL);
+        $operator = $this->operator();
+    
+        if ($this->isEOF()) {
+            throw new FailedToParseException("Unexpected end to expression", $this->lexer->lineColumn());
+        }
+        
+        $right = $this->right();
+        
+        $operator->setLeftRight($left, $right);
+        return $operator;
     }
     
     
@@ -77,19 +96,67 @@ class SINSQLParser
     private function left()
     {
         $left = null;
-        if (
-            $this->currentTokenMatches(Token::TXT_COLON) ||
-            $this->currentTokenMatches(Token::TXT_NUMBER) ||
-            $this->currentTokenMatches(Token::TXT_STRING)
-        ) {
+        if ($this->isTerm()) {
             $left = $this->term();
         } else {
             if (!$this->isEOF())
                 $left = $this->expression();
         }
         
-        $this->advanceToken();
         return $left;
+    }
+    
+    
+    /**
+     * @return Expression
+     * @throws FailedToParseException
+     * @throws TokenMismatchException
+     */
+    private function operator()
+    {
+        $operator = "";
+        $currentToken = null;
+        $expression = null;
+        $lineColumn = $this->lexer->lineColumn();
+    
+        while ($this->currentTokenMatches(Token::TXT_SPACE) || $this->currentTokenMatches(Token::TXT_SYMBOL)) {
+            if ($this->currentTokenMatches(Token::TXT_SPACE)) {
+                $representation = null;
+                Token::getToken(Token::TXT_SPACE, $representation);
+                $operator .= $representation;
+            } else {
+                $operator .= $this->lexer->symbol();
+            }
+            
+            $this->advanceToken();
+        }
+         
+        $operator = trim($operator, " ");
+        
+        if (!ExpressionType::getExpression($operator, $expression)) {
+            $message = sprintf("Unable to locate '%s' operator", $operator);
+            throw new FailedToParseException($message, $lineColumn);
+        }
+        
+        $expression = ExpressionRegistry::getExpression($expression);
+        return $expression;
+    }
+    
+    
+    /**
+     * @return ITerm
+     */
+    private function right()
+    {
+        $right = null;
+        if ($this->isTerm()) {
+            $right = $this->term();
+        } else {
+            if (!$this->isEOF())
+                $right = $this->expression();
+        }
+        
+        return $right;
     }
     
     /**
@@ -140,11 +207,6 @@ class SINSQLParser
         return new Variable($value);
     }
     
-    private function operator()
-    {
-        
-    }
-    
     private function sequence()
     {
         
@@ -187,5 +249,14 @@ class SINSQLParser
     private function isEOF()
     {
         return ($this->currentToken() == Token::EOF);
+    }
+    
+    private function isTerm()
+    {
+        return (
+            $this->currentTokenMatches(Token::TXT_COLON) ||
+            $this->currentTokenMatches(Token::TXT_NUMBER) ||
+            $this->currentTokenMatches(Token::TXT_STRING)
+        );
     }
 }
