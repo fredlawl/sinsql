@@ -110,17 +110,15 @@ class SINSQLParserTest extends PHPUnit_Framework_TestCase
 //        $this->assertTrue($parser->generateParseTree()->evaluate());
 //    }
     
-    
-    /**
-     * In order for this to work, parentheses need to be supported.
-     * Right now, it'll only evaluate 12 is 12 and call it a day.
-     */
-//    public function testMultipleExpressions()
-//    {
-//        $expected = "(12 IS 12) AND (13 IS 13)";
-//        $parser = new SINSQLParser(new StringBuffer($expected));
-//        $tree = $parser->generateParseTree();
-//        $this->assertTrue($tree->evaluate());
-//    }
+
+    public function testMultipleExpressions()
+    {
+//        $expected = "(12 IS 12) AND ((\"tree\" IS \"TrEe\") AND (13 IS 13))";
+        $expected = "(12 IS 12) AND (\"tree\" IS \"tree\")";
+        $parser = new SINSQLParser(new StringBuffer($expected));
+        $tree = $parser->generateParseTree();
+        var_dump($tree);
+        $this->assertTrue($tree->evaluate());
+    }
     
 }
