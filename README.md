@@ -10,6 +10,7 @@ This pet project was inspired by a past project where a grammar similar to this 
 
 >Results will always be false unless proven true.
 
+### Language Grammar
 ```
 "text" IS "TEXT"
 => true
@@ -25,7 +26,32 @@ This pet project was inspired by a past project where a grammar similar to this 
  ```
  (:isAwesome IS true) OR ((:age GREATER THAN OR IS 21) AND :footballteam IN ("L.A. Rams", "St. Louis Rams", "Rams"))
  => true
- ``` 
+ ```
+  
+### PHP
+```php
+<?php
+
+$parser = new \SINSQL\SINSQL();
+$query = "12 IS 12";
+if ($parser->parse($query)) {
+    echo "it works!";
+} else {
+    echo "oops!";
+}
+```
+
+```php
+<?php
+
+$parser = new \SINSQL\SINSQL(new MyVariableMapper());
+$query = ":myvar IS 12";
+if ($parser->parse($query)) {
+    echo "it works!";
+} else {
+    echo "oops!";
+}
+```
 
 ## Grammar Definition
 ```
