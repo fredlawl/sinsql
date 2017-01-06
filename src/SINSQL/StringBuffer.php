@@ -7,65 +7,66 @@ use SINSQL\Interfaces\IBuffer;
 
 class StringBuffer implements IBuffer
 {
-    private $lineNumber = 0;
-    private $columnNumber = 0;
-    private $line = "";
+    private $currentLineIndex = 0;
+    private $currentColumnIndex = 0;
+    private $currentLine = "";
     private $input;
+    private $numberOfLines;
     private $eof;
-    private $isEOF;
     
     public function __construct($input)
     {
-        $this->isEOF = empty($input);
+        $this->eof = empty($input);
         $this->input = explode("\n", $input);
-        $this->eof = count($this->input);
+        $this->numberOfLines = count($this->input);
     }
     
     public function get()
     {
-        $this->columnNumber++;
-        $lineLength = strlen($this->line);
+        $this->currentColumnIndex++;
+        $lineLength = strlen($this->currentLine);
         
-        if ($this->columnNumber >= $lineLength) {
+        if ($this->currentColumnIndex >= $lineLength) {
             
-            if ($this->lineNumber == $this->eof) {
-                $this->isEOF = true;
+            if ($this->currentLineIndex == $this->numberOfLines) {
+                $this->eof = true;
                 return null;
             }
             
-            $line = $this->input[$this->lineNumber];
-            $this->columnNumber = 0;
-            $this->lineNumber++;
-            $this->line = $line;
+            $line = $this->input[$this->currentLineIndex];
+            $this->currentColumnIndex = 0;
+            $this->currentLineIndex++;
+            $this->currentLine = $line;
+            
             $lineLength = strlen($line);
         }
         
         if ($lineLength == 0)
             return $this->get();
         
-        return $this->line[$this->columnNumber];
+        return $this->currentLine[$this->currentColumnIndex];
     }
     
     public function reset()
     {
-        $this->line = "";
-        $this->lineNumber = 0;
-        $this->columnNumber = 0;
+        $this->currentLine = "";
+        $this->currentLineIndex = 0;
+        $this->currentColumnIndex = 0;
     }
     
     public function currentLine()
     {
-        return $this->lineNumber;
+        return $this->currentLineIndex;
     }
     
     public function currentColumn()
     {
-        return $this->columnNumber - 1;
+        return $this->currentColumnIndex - 1;
     }
     
     public function isEOF()
     {
-        return $this->isEOF;
+        return $this->eof;
     }
     
     public function displayLineColumn()

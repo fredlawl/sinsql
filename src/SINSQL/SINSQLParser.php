@@ -88,13 +88,13 @@ class SINSQLParser
     {
         if ($this->currentTokenMatches(Token::TXT_LEFTPAREN)) {
             $expression = $this->expression();
-            $this->currentTokenExpected(Token::TXT_RIGHTPAREN);
+            $this->expected(Token::TXT_RIGHTPAREN);
             $this->advanceToken();
             return $expression;
         }
         
         $left = $this->term();
-        $this->expected(Token::TXT_SYMBOL);
+//        $this->expected(Token::TXT_SYMBOL);
         return $left;
     }
     
@@ -106,23 +106,22 @@ class SINSQLParser
      */
     private function operator()
     {
+        $this->advanceToken();
         $operator = "";
         $currentToken = null;
         $expression = null;
         $lineColumn = $this->lexer->lineColumn();
     
-        while ($this->currentTokenMatches(Token::TXT_SPACE) || $this->currentTokenMatches(Token::TXT_SYMBOL)) {
+        do {
             if ($this->currentTokenMatches(Token::TXT_SPACE)) {
-                $representation = null;
-                Token::getToken(Token::TXT_SPACE, $representation);
-                $operator .= $representation;
+                $operator .= " ";
             } else {
                 $operator .= $this->lexer->symbol();
             }
             
             $this->advanceToken();
-        }
-         
+        } while($this->currentTokenMatches(Token::TXT_SPACE) || $this->currentTokenMatches(Token::TXT_SYMBOL));
+        
         $operator = trim($operator, " ");
     
         if ($this->isEOF()) {
@@ -135,7 +134,6 @@ class SINSQLParser
         }
         
         $expression = ExpressionRegistry::getExpression($expression);
-        
         return $expression;
     }
     
@@ -147,7 +145,7 @@ class SINSQLParser
     {
         if ($this->currentTokenMatches(Token::TXT_LEFTPAREN)) {
             $expression = $this->expression();
-            $this->currentTokenExpected(Token::TXT_RIGHTPAREN);
+            $this->expected(Token::TXT_RIGHTPAREN);
             $this->advanceToken();
             return $expression;
         }
@@ -185,7 +183,7 @@ class SINSQLParser
             throw new SINQLException("Invalid call to function " . __CLASS__ . "::term().");
         }
         
-        $this->advanceToken();
+//        $this->advanceToken();
         return $return;
     }
     

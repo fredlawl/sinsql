@@ -10,26 +10,6 @@ use SINSQL\Token;
 
 class LexerTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var Lexer
-     */
-    private $scanner;
-    
-    /**
-     * @var IBuffer
-     */
-    private $buffer;
-    
-    private $sampleString;
-    
-    public function SetUp()
-    {
-        $this->sampleString = "(:variable IS \"doomed\") AND (25 GREATER THAN OR IS :kool) OR (:var IN (\"Awesome\", \"TEST\", \"Too soon\"))";
-//        $this->sampleString = "12 IS 12";
-        $this->buffer = new StringBuffer($this->sampleString);
-        $this->scanner = new Lexer($this->buffer);
-    }
-    
     public function testStatementIsEmpty()
     {
         $statement = "";
@@ -88,38 +68,45 @@ class LexerTest extends PHPUnit_Framework_TestCase
     
     public function testTokensConsumed()
     {
+        $characters = "(:variable IS \"doomed\") AND (25 GREATER THAN OR IS :kool) OR (:var IN (\"Awesome\", \"TEST\", \"Too soon\"))";
+        $scanner = new Lexer(new StringBuffer($characters));
         $expected = 3;
-        $this->scanner->getToken();
-        $this->scanner->getToken();
-        $this->scanner->getToken();
-        $actual = $this->scanner->numOfTokensConsumed();
+        $scanner->getToken();
+        $scanner->getToken();
+        $scanner->getToken();
+        $actual = $scanner->numOfTokensConsumed();
         
         $this->assertEquals($expected, $actual);
     }
     
     public function testSkipNextTokens()
     {
-        $actual = $this->scanner->skipNextTokens(3);
+        $characters = "(:variable IS \"doomed\") AND (25 GREATER THAN OR IS :kool) OR (:var IN (\"Awesome\", \"TEST\", \"Too soon\"))";
+        $scanner = new Lexer(new StringBuffer($characters));
+        $actual = $scanner->skipNextTokens(3);
         $expected = Token::TXT_SYMBOL;
         $this->assertEquals($expected, $actual);
     }
     
     public function testTokenizerWorks()
     {
-        while (($tok = $this->scanner->getToken()) != Token::EOF)
+        $characters = "(12 IS 12) AND (\"tree\" IS \"tree\")";
+        $scanner = new Lexer(new StringBuffer($characters));
+        
+        while (($tok = $scanner->getToken()) != Token::EOF)
         {
             $holder = null;
             $tokenname = Token::stringify($tok);
             switch($tok)
             {
                 case Token::TXT_STRING:
-                    $holder = $this->scanner->string();
+                    $holder = $scanner->string();
                     break;
                 case Token::TXT_NUMBER:
-                    $holder = $this->scanner->number();
+                    $holder = $scanner->number();
                     break;
                 case Token::TXT_SYMBOL:
-                    $holder = $this->scanner->symbol();
+                    $holder = $scanner->symbol();
                     break;
                 default:
                     Token::parseToken($tok, $holder);

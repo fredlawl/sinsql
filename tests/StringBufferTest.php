@@ -9,11 +9,12 @@ class StringBufferTest extends PHPUnit_Framework_TestCase
      * @var IBuffer
      */
     private $buffer;
+    private $sampleString;
     
     public function SetUp()
     {
-        $sampleString = "this is a sample string\na new line\n\n\n";
-        $this->buffer = new StringBuffer($sampleString);
+        $this->sampleString = "this is a sample string\na new line\n\n\n";
+        $this->buffer = new StringBuffer($this->sampleString);
     }
     
     public function testBufferGetsCharacter()
@@ -36,11 +37,13 @@ class StringBufferTest extends PHPUnit_Framework_TestCase
     
     public function testBufferReachesEOF()
     {
-        while ($this->buffer->get() != null)
+        $expected = "this is a sample stringa new line";
+        $actual = "";
+        while (($char = $this->buffer->get()) != null)
         {
-            
+            $actual .= $char;
         }
         
-        $this->assertTrue(true);
+        $this->assertEquals($expected, $actual);
     }
 }

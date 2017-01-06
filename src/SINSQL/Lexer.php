@@ -28,19 +28,16 @@ class Lexer
     public function __construct(IBuffer $buffer)
     {
         $this->buffer = $buffer;
+        $this->currentCharacter = $this->buffer->get();
+        $this->identifier = $this->currentCharacter;
+        $this->nextCharacter = $this->buffer->get();
     }
     
     public function getToken()
     {
         // Immediate close if done scanning
-        if ($this->buffer->isEOF())
+        if ($this->currentCharacter == null)
             return Token::EOF;
-        
-        // Advance the buffer to negate the start.
-        if (empty($this->currentCharacter)) {
-            $this->nextCharacter();
-            $this->nextCharacter();
-        }
         
         // parse whitespace
         if ($this->isWhitespace()) {
@@ -129,28 +126,21 @@ class Lexer
     
     private function parseString()
     {
-        // To ignore that first quote
-        $this->nextCharacter();
-    
-        $hasClosingQuote = false;
         $lineColumn = $this->lineColumn();
         
         $result = "";
-        
-        do {
-            $result = $result . $this->currentCharacter;
-            $this->nextCharacter();
-        } while (!$this->isQuote() && !$this->buffer->isEOF());
     
-        if ($this->isQuote())
-            $hasClosingQuote = true;
-        
-        if ($this->buffer->isEOF() && !$hasClosingQuote)
-            throw new FailedToParseException("Expected closing quotation mark", $lineColumn);
-        
-        // Proceed to next token to not do infinite loops :p
+        do {
+            $this->nextCharacter();
+            $result .= $this->currentCharacter;
+        } while ($this->nextCharacter != '"' && $this->nextCharacter != null);
+    
         $this->nextCharacter();
+        if ($this->currentCharacter != '"') {
+            throw new FailedToParseException("Expected closing quotation mark", $lineColumn);
+        }
         
+        $this->nextCharacter();
         return $result;
     }
     
