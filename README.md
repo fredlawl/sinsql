@@ -29,9 +29,9 @@ This pet project was inspired by a past project where a grammar similar to this 
 
 ## Grammar Definition
 ```
-expression = ["("], left, operator, right, [")"];
-left = term | expression;
-right = term | expression | sequence;
+expression = left, operator, right;
+left = term | "(", expression, ")";
+right = term | sequence | "(", expression, ")";
 operator = "AND" | "OR" | "IS" | "IS NOT" | "IN" | "NOT IN" | "LESS THAN" | "GREATER THAN" | "LESS THAN OR IS" | "GREATER THAN OR IS";
 sequence = "(", { ( term, "," ) }, -",", ")"
 term = number | string | variable;
