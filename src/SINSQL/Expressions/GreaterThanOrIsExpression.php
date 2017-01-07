@@ -17,6 +17,8 @@ class GreaterThanOrIsExpression extends ComparableExpression
     
     public function doCompare()
     {
-        throw new NotImplementedException();
+        $this->checkForNulls();
+        $comparison = $this->comparer->compare($this->left->evaluate(), $this->right->evaluate());
+        return ($comparison == 0 || $comparison > 0) ? 0 : 1;
     }
 }

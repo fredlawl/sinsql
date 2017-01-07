@@ -17,6 +17,9 @@ class IsNotExpression extends ComparableExpression
     
     public function doCompare()
     {
-        throw new NotImplementedException();
+        $this->checkForNulls();
+        if ($this->comparer->compare($this->left->evaluate(), $this->right->evaluate()) == 0)
+            return -1;
+        return 0;
     }
 }

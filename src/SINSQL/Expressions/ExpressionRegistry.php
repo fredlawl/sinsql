@@ -59,19 +59,19 @@ class ExpressionRegistry
             return;
         
         self::$comparableExpressionRegistry = [
-            ExpressionType::EXP_EQUALS => '\\SINSQL\\Expressions\\IsExpression',
-            ExpressionType::EXP_NOTEQUALS => '\\SINSQL\\Expressions\\IsNotExpression',
-            ExpressionType::EXP_GREATERTHAN => '\\SINSQL\\Expressions\\GreaterThanExpression',
-            ExpressionType::EXP_GREATERTHANEQUALS => '\\SINSQL\\Expressions\\GreaterThanOrIsExpression',
-            ExpressionType::EXP_LESSTHAN => '\\SINSQL\\Expressions\\LesserThanExpression',
-            ExpressionType::EXP_LESSTHANEQUALS => '\\SINSQL\\Expressions\\LesserThanOrIsExpression'
+            ExpressionType::EXP_EQUALS => IsExpression::class,
+            ExpressionType::EXP_NOTEQUALS => IsNotExpression::class,
+            ExpressionType::EXP_GREATERTHAN => GreaterThanExpression::class,
+            ExpressionType::EXP_GREATERTHANEQUALS => GreaterThanOrIsExpression::class,
+            ExpressionType::EXP_LESSTHAN => LessThanExpression::class,
+            ExpressionType::EXP_LESSTHANEQUALS => LessThanOrIsExpression::class
         ];
         
         self::$expressionRegistry = [
-            ExpressionType::EXP_SEQUENCE => '\\SINSQL\\Expressions\\InExpression',
-            ExpressionType::EXP_NOTSEQUENCE => '\\SINSQL\\Expressions\\NotInExpression',
-            ExpressionType::EXP_AND => '\\SINSQL\\Expressions\\AndExpression',
-            ExpressionType::EXP_OR => '\\SINSQL\\Expressions\\OrExpression'
+            ExpressionType::EXP_SEQUENCE => InExpression::class,
+            ExpressionType::EXP_NOTSEQUENCE => NotInExpression::class,
+            ExpressionType::EXP_AND => AndExpression::class,
+            ExpressionType::EXP_OR => OrExpression::class
         ] + self::$comparableExpressionRegistry;
     }
 }
