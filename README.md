@@ -1,7 +1,5 @@
 # SINSQL (SINSQL is not SQL)
 
-> DISCLAIMER: Still in active development
-
 A small little language interpreter written in PHP to parse and execute user-defined logic.
 
 This pet project was inspired by a past project where a grammar similar to this was needed to conditionally render content on site based on certain user-defined criteria.

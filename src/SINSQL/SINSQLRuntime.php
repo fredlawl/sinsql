@@ -196,10 +196,10 @@ class SINSQLRuntime
     
     
     /**
-     * @return MixedValue
+     * @return ITerm
      * @throws SINQLException
      */
-    private function &variable()
+    private function variable()
     {
         $this->nextTokenExpected(Token::TXT_SYMBOL);
         $this->advanceToken();
@@ -210,7 +210,11 @@ class SINSQLRuntime
             throw new SINQLException($message);
         }
         
-        return new MixedValue($this->variableMapper->map($symbol));
+        $mappedVariable = $this->variableMapper->map($symbol);
+        if (is_string($mappedVariable))
+            return new StringValue($mappedVariable);
+        
+        return new MixedValue($mappedVariable);
     }
     
     
