@@ -42,6 +42,20 @@ if ($parser->parse($query)) {
 ```php
 <?php
 
+class MyVariableMapper implements \SINSQL\Interfaces\IVariableMapper {
+    
+    private $variables = [
+      'myvar' => 12  
+    ];
+    
+    public function map($variableKey) {
+      if (!isset($this->variables[$variableKey]))
+          throw new Exception($variableKey . " not found in list.");
+      
+      return $this->variables[$variableKey];
+    }
+}
+
 $parser = new \SINSQL\SINSQL(new MyVariableMapper());
 $query = ":myvar IS 12";
 if ($parser->parse($query)) {
