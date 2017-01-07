@@ -21,6 +21,7 @@ class Lexer
     private $string = "";
     private $identifier = '';
     private $symbol = '';
+    private $variable = '';
     
     private $numberOfTokensConsumed = 0;
     
@@ -34,37 +35,43 @@ class Lexer
     
     public function getToken()
     {
-        $tmpToken = Token::EOF;
+        $tmpToken = Token::TOK_EOF;
         
         // Immediate close if done scanning
         if ($this->character == null)
-            return Token::EOF;
+            return Token::TOK_EOF;
         
         // parse whitespace
         if ($this->isWhitespace()) {
             $this->consumeWhitespace();
             ++$this->numberOfTokensConsumed;
-            return Token::TXT_SPACE;
+            return Token::TOK_SPACE;
         }
         
         // parse a number
         if ($this->isDigit()) {
             $this->number = $this->parseNumber();
             ++$this->numberOfTokensConsumed;
-            return Token::TXT_NUMBER;
+            return Token::TOK_NUMBER;
         }
         
         // parse a string
         if ($this->isQuote()) {
             $this->string = $this->parseString();
             ++$this->numberOfTokensConsumed;
-            return Token::TXT_STRING;
+            return Token::TOK_STRING;
+        }
+        
+        if ($this->isVariable()) {
+	        $this->variable = $this->parseVariable();
+	        ++$this->numberOfTokensConsumed;
+	        return Token::TOK_VARIABLE;
         }
         
         // parse a character
         if ($this->isAllowableCharacter()) {
             $this->symbol = $this->parseSymbol();
-            $tmpToken = Token::TXT_SYMBOL;
+            $tmpToken = Token::TOK_SYMBOL;
         } else {
             $char = $this->character;
             $this->advanceBuffer();
@@ -111,6 +118,11 @@ class Lexer
         return $this->symbol;
     }
     
+    public function variable()
+    {
+    	return $this->variable;
+    }
+    
     private function parseNumber()
     {
         $result = 0;
@@ -144,16 +156,34 @@ class Lexer
     
     private function parseSymbol()
     {
-        $this->advanceBuffer();
-        
-        $result = $this->identifier;
-        do {
-            $result = $result . $this->character;
-            $this->advanceBuffer();
-        } while ($this->isAllowableCharacter());
-        
-        return $result;
+	    $this->advanceBuffer();
+	
+	    $result = $this->identifier;
+	    do {
+		    $result = $result . $this->character;
+		    $this->advanceBuffer();
+	    } while ($this->isAllowableCharacter());
+	
+	    return $result;
     }
+    
+	private function parseVariable()
+	{
+		$this->advanceBuffer();
+		
+		$result = "";
+		do {
+			$result = $result . $this->character;
+			
+			if (!$this->isAllowableCharacterForVariable()) {
+				throw new IllegalCharacterException($this->character, $this->buffer->displayLineColumn());
+			}
+			
+			$this->advanceBuffer();
+		} while (!ctype_space($this->character) && $this->character != null);
+		
+		return $result;
+	}
     
     private function consumeWhitespace()
     {
@@ -184,9 +214,19 @@ class Lexer
         return ctype_alpha($this->character);
     }
     
+    private function isAllowableCharacterForVariable()
+    {
+	    return ctype_alpha($this->character) || ctype_digit($this->character) || $this->character == '_';
+    }
+    
     private function isQuote()
     {
         return $this->character == '"';
+    }
+    
+    private function isVariable()
+    {
+    	return $this->character == ':';
     }
     
     public function lineColumn()

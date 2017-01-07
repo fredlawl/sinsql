@@ -5,24 +5,25 @@ namespace SINSQL;
 
 class Token
 {
-    const TXT_LEFTPAREN = '(';
-    const TXT_RIGHTPAREN = ')';
+    const TOK_LEFTPAREN = '(';
+    const TOK_RIGHTPAREN = ')';
     
-    const TXT_LEFTBRACK = '[';
-    const TXT_RIGHTBRACK = ']';
+    const TOK_LEFTBRACK = '[';
+    const TOK_RIGHTBRACK = ']';
     
-    const TXT_COLON = ':';
-    const TXT_DOT = '.';
-    const TXT_COMMA = ',';
-    const TXT_QUOTE = '"';
-    const TXT_SPACE = ' ';
+    const TOK_COLON = ':';
+    const TOK_DOT = '.';
+    const TOK_COMMA = ',';
+    const TOK_QUOTE = '"';
+    const TOK_SPACE = ' ';
     
-    const TXT_NUMBER = 100;
-    const TXT_CHARACTER = 1001;
-    const TXT_STRING = 1002;
-    const TXT_SYMBOL = 1003;
+    const TOK_NUMBER = 1000;
+    const TOK_CHARACTER = 1001;
+    const TOK_STRING = 1002;
+    const TOK_SYMBOL = 1003;
+	const TOK_VARIABLE = 1004;
     
-    const EOF = 9999;
+    const TOK_EOF = 9999;
     
     private static $tokenNamesTable = null;
     private static $tokenValueLookupTable = null;

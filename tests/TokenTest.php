@@ -7,7 +7,7 @@ class TokenTest extends PHPUnit_Framework_TestCase
     public function testParseTokenReturnsPrettyToken()
     {
         $actual = null;
-        $returnResult = Token::parseToken(Token::TXT_COLON, $actual);
+        $returnResult = Token::parseToken(Token::TOK_COLON, $actual);
         $expected = ":";
         
         $this->assertTrue($returnResult);
@@ -18,7 +18,7 @@ class TokenTest extends PHPUnit_Framework_TestCase
     {
         $actual = null;
         $returnResult = Token::getToken(")", $actual);
-        $expected = Token::TXT_RIGHTPAREN;
+        $expected = Token::TOK_RIGHTPAREN;
     
         $this->assertTrue($returnResult);
         $this->assertEquals($expected, $actual);

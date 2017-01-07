@@ -29,7 +29,7 @@ class SINSQLRuntime
      */
     private $variableMapper;
     
-    private $nextToken = Token::EOF;
+    private $nextToken = Token::TOK_EOF;
     private $token = null;
     
     
@@ -61,7 +61,7 @@ class SINSQLRuntime
     public function generateParseTree()
     {
         $this->advanceToken();
-        if ($this->nextTokenMatches(Token::EOF))
+        if ($this->nextTokenMatches(Token::TOK_EOF))
             return null;
         
         return $this->expression();
@@ -99,9 +99,9 @@ class SINSQLRuntime
      */
     private function left()
     {
-        if ($this->matches(Token::TXT_LEFTPAREN)) {
+        if ($this->matches(Token::TOK_LEFTPAREN)) {
             $expression = $this->expression()->evaluate();
-            $this->nextTokenExpected(Token::TXT_RIGHTPAREN);
+            $this->nextTokenExpected(Token::TOK_RIGHTPAREN);
             $this->advanceToken();
             return new MixedValue($expression);
         }
@@ -123,9 +123,9 @@ class SINSQLRuntime
         $lineColumn = $this->lexer->lineColumn();
     
         do {
-            $operator .= ($this->matches(Token::TXT_SPACE)) ? " " : $this->lexer->symbol();
+            $operator .= ($this->matches(Token::TOK_SPACE)) ? " " : $this->lexer->symbol();
             $this->advanceToken();
-        } while ($this->matches(Token::TXT_SPACE) || $this->matches(Token::TXT_SYMBOL));
+        } while ($this->matches(Token::TOK_SPACE) || $this->matches(Token::TOK_SYMBOL));
         
         $operator = trim($operator, " ");
     
@@ -147,9 +147,9 @@ class SINSQLRuntime
      */
     private function right()
     {
-        if ($this->matches(Token::TXT_LEFTPAREN)) {
+        if ($this->matches(Token::TOK_LEFTPAREN)) {
             $expression = $this->expression()->evaluate();
-            $this->nextTokenExpected(Token::TXT_RIGHTPAREN);
+            $this->nextTokenExpected(Token::TOK_RIGHTPAREN);
             $this->advanceToken();
             return new MixedValue($expression);
         }
@@ -170,24 +170,24 @@ class SINSQLRuntime
     private function &term()
     {
         $return = null;
-        if ($this->matches(Token::TXT_COLON)) {
+        if ($this->matches(Token::TOK_VARIABLE)) {
             $return = $this->variable();
         }
         
-        if ($this->matches(Token::TXT_NUMBER)) {
+        if ($this->matches(Token::TOK_NUMBER)) {
             // TODO: Change to a different type.
             $return = new MixedValue($this->lexer->number());
         }
     
-        if ($this->matches(Token::TXT_STRING)) {
+        if ($this->matches(Token::TOK_STRING)) {
             $return = new StringValue($this->lexer->string());
         }
         
         if (is_null($return)) {
             throw new TokenMismatchException([
-                Token::TXT_COLON,
-                Token::TXT_NUMBER,
-                Token::TXT_STRING
+                Token::TOK_COLON,
+                Token::TOK_NUMBER,
+                Token::TOK_STRING
             ], $this->token, $this->lexer->lineColumn());
         }
         
@@ -201,7 +201,7 @@ class SINSQLRuntime
      */
     private function variable()
     {
-        $this->nextTokenExpected(Token::TXT_SYMBOL);
+        $this->expected(Token::TOK_VARIABLE);
         $this->advanceToken();
         $symbol = $this->lexer->symbol();
     
@@ -224,7 +224,7 @@ class SINSQLRuntime
     private function &sequence()
     {
         $sequence = new ArrayValue();
-        $this->expected(Token::TXT_LEFTBRACK);
+        $this->expected(Token::TOK_LEFTBRACK);
         
         do {
             $this->advanceToken();
@@ -232,23 +232,23 @@ class SINSQLRuntime
             $sequence[] = $this->term()->evaluate();
             
             // Verify comma rule
-            if ($this->nextToken != Token::TXT_RIGHTBRACK && $this->nextToken != Token::EOF) {
+            if ($this->nextToken != Token::TOK_RIGHTBRACK && $this->nextToken != Token::TOK_EOF) {
                 // Ignore space
-                if ($this->nextTokenMatches(Token::TXT_SPACE))
+                if ($this->nextTokenMatches(Token::TOK_SPACE))
                     $this->advanceToken();
                 
                 // Must verify comma is present
-                $this->nextTokenExpected(Token::TXT_COMMA);
+                $this->nextTokenExpected(Token::TOK_COMMA);
                 $this->advanceToken();
                 
                 // Ignore space
-                if ($this->nextTokenMatches(Token::TXT_SPACE))
+                if ($this->nextTokenMatches(Token::TOK_SPACE))
                     $this->advanceToken();
             }
             
-        } while ($this->nextToken != Token::TXT_RIGHTBRACK && $this->nextToken != Token::EOF);
+        } while ($this->nextToken != Token::TOK_RIGHTBRACK && $this->nextToken != Token::TOK_EOF);
         
-        $this->nextTokenExpected(Token::TXT_RIGHTBRACK);
+        $this->nextTokenExpected(Token::TOK_RIGHTBRACK);
         
         return $sequence;
     }
@@ -285,20 +285,20 @@ class SINSQLRuntime
     
     private function isEOF()
     {
-        return ($this->token == Token::EOF);
+        return ($this->token == Token::TOK_EOF);
     }
     
     private function isTerm()
     {
         return (
-            $this->matches(Token::TXT_COLON) ||
-            $this->matches(Token::TXT_NUMBER) ||
-            $this->matches(Token::TXT_STRING)
+	        $this->matches(Token::TOK_COLON) ||
+	        $this->matches(Token::TOK_NUMBER) ||
+	        $this->matches(Token::TOK_STRING)
         );
     }
     
     private function isSequence()
     {
-        return $this->matches(Token::TXT_LEFTBRACK);
+        return $this->matches(Token::TOK_LEFTBRACK);
     }
 }

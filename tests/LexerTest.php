@@ -15,7 +15,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
         $statement = "";
         $scanner = new Lexer(new StringBuffer($statement));
         $actual = $scanner->getToken();
-        $expected = Token::EOF;
+        $expected = Token::TOK_EOF;
         $this->assertEquals($expected, $actual);
     }
     
@@ -25,7 +25,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
         $scanner = new Lexer(new StringBuffer($characters));
         
         try{
-            while ($scanner->getToken() != Token::EOF)
+            while ($scanner->getToken() != Token::TOK_EOF)
             {
         
             }
@@ -41,7 +41,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
         $scanner = new Lexer(new StringBuffer($characters));
 
         try {
-            while ($scanner->getToken() != Token::EOF)
+            while ($scanner->getToken() != Token::TOK_EOF)
             {
 
             }
@@ -55,7 +55,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
     {
         $characters = "\"0987654321`~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()<>,./?:;'][{}\\|\"";
         $scanner = new Lexer(new StringBuffer($characters));
-        while ($scanner->getToken() != Token::EOF)
+        while ($scanner->getToken() != Token::TOK_EOF)
         {
             
         }
@@ -83,8 +83,8 @@ class LexerTest extends PHPUnit_Framework_TestCase
     {
         $characters = "(:variable IS \"doomed\") AND (25 GREATER THAN OR IS :kool) OR (:var IN (\"Awesome\", \"TEST\", \"Too soon\"))";
         $scanner = new Lexer(new StringBuffer($characters));
-        $actual = $scanner->skipNextTokens(3);
-        $expected = Token::TXT_SYMBOL;
+        $actual = $scanner->skipNextTokens(4);
+        $expected = Token::TOK_SYMBOL;
         $this->assertEquals($expected, $actual);
     }
     
@@ -94,20 +94,23 @@ class LexerTest extends PHPUnit_Framework_TestCase
         $characters = "(12 IS 12) AND (12 IN [12, 1, 4, 5])";
         $scanner = new Lexer(new StringBuffer($characters));
         
-        while (($tok = $scanner->getToken()) != Token::EOF)
+        while (($tok = $scanner->getToken()) != Token::TOK_EOF)
         {
             $holder = null;
             $tokenname = Token::stringify($tok);
             switch($tok)
             {
-                case Token::TXT_STRING:
+                case Token::TOK_STRING:
                     $holder = $scanner->string();
                     break;
-                case Token::TXT_NUMBER:
+                case Token::TOK_NUMBER:
                     $holder = $scanner->number();
                     break;
-                case Token::TXT_SYMBOL:
-                    $holder = $scanner->symbol();
+                case Token::TOK_SYMBOL:
+	                $holder = $scanner->symbol();
+	                break;
+                case Token::TOK_VARIABLE:
+                    $holder = $scanner->variable();
                     break;
                 default:
                     Token::parseToken($tok, $holder);

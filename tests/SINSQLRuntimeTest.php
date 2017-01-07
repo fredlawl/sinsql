@@ -1,6 +1,7 @@
 <?php
 
 use SINSQL\Exceptions\FailedToParseException;
+use SINSQL\Exceptions\IllegalCharacterException;
 use SINSQL\Exceptions\SINQLException;
 use SINSQL\Exceptions\TokenMismatchException;
 use SINSQL\Interfaces\IVariableMapper;
@@ -38,7 +39,7 @@ class SINSQLRuntimeTest extends PHPUnit_Framework_TestCase
             $parser = new SINSQLRuntime(new StringBuffer("::somevar"));
             $parser->generateParseTree()->evaluate();
             $this->assertTrue(false, "This test should've failed");
-        } catch (TokenMismatchException $e) {
+        } catch (IllegalCharacterException $e) {
             $this->assertTrue(true);
         }
     }

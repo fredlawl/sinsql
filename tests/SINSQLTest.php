@@ -187,7 +187,7 @@ class SINSQLTest extends PHPUnit_Framework_TestCase
     
         $parser = new SINSQL($mapper);
         $this->assertTrue($parser->parse(":myvariable IS 14"));
-    
+        
         
         $mapper = \Mockery::mock(IVariableMapper::class)
             ->shouldReceive('map')
@@ -199,6 +199,18 @@ class SINSQLTest extends PHPUnit_Framework_TestCase
     
         $parser = new SINSQL($mapper);
         $this->assertTrue($parser->parse(":myvariable IS \"KING\""));
+    }
+    
+    
+    public function testVariableHasNumbersCharactersOrUnderscores()
+    {
+	    $mapper = \Mockery::mock(IVariableMapper::class)
+	                      ->shouldReceive('map')
+	                      ->andReturn(14)
+	                      ->mock();
+	
+	    $parser = new SINSQL($mapper);
+	    $this->assertTrue($parser->parse(":__12_Variable12 IS 14"));
     }
     
     
