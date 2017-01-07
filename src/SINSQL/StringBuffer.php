@@ -32,13 +32,11 @@ class StringBuffer implements IBuffer
                 $this->eof = true;
                 return null;
             }
-            
-            $line = $this->input[$this->currentLineIndex];
+    
+            $this->currentLine = $this->input[$this->currentLineIndex];
             $this->currentColumnIndex = 0;
             ++$this->currentLineIndex;
-            $this->currentLine = $line;
-            
-            $lineLength = strlen($line);
+            $lineLength = strlen($this->currentLine);
         }
         
         if ($lineLength == 0)

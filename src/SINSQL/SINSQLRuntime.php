@@ -26,7 +26,7 @@ class SINSQLRuntime
     private $variableMapper;
     
     private $nextToken = Token::EOF;
-    private $currentToken = null;
+    private $token = null;
     
     
     public function __construct(IBuffer& $buffer, IVariableMapper& $variableMapper = null)
@@ -57,7 +57,7 @@ class SINSQLRuntime
     public function generateParseTree()
     {
         $this->advanceToken();
-        if ($this->matches(Token::EOF))
+        if ($this->nextTokenMatches(Token::EOF))
             return null;
         
         return $this->expression();
@@ -86,9 +86,9 @@ class SINSQLRuntime
      */
     private function left()
     {
-        if ($this->currentTokenMatches(Token::TXT_LEFTPAREN)) {
+        if ($this->matches(Token::TXT_LEFTPAREN)) {
             $expression = $this->expression()->evaluate();
-            $this->expected(Token::TXT_RIGHTPAREN);
+            $this->nextTokenExpected(Token::TXT_RIGHTPAREN);
             $this->advanceToken();
             return new Variable($expression);
         }
@@ -110,9 +110,9 @@ class SINSQLRuntime
         $lineColumn = $this->lexer->lineColumn();
     
         do {
-            $operator .= ($this->currentTokenMatches(Token::TXT_SPACE)) ? " " : $this->lexer->symbol();
+            $operator .= ($this->matches(Token::TXT_SPACE)) ? " " : $this->lexer->symbol();
             $this->advanceToken();
-        } while ($this->currentTokenMatches(Token::TXT_SPACE) || $this->currentTokenMatches(Token::TXT_SYMBOL));
+        } while ($this->matches(Token::TXT_SPACE) || $this->matches(Token::TXT_SYMBOL));
         
         $operator = trim($operator, " ");
     
@@ -134,9 +134,9 @@ class SINSQLRuntime
      */
     private function right()
     {
-        if ($this->currentTokenMatches(Token::TXT_LEFTPAREN)) {
+        if ($this->matches(Token::TXT_LEFTPAREN)) {
             $expression = $this->expression()->evaluate();
-            $this->expected(Token::TXT_RIGHTPAREN);
+            $this->nextTokenExpected(Token::TXT_RIGHTPAREN);
             $this->advanceToken();
             return new Variable($expression);
         }
@@ -157,16 +157,16 @@ class SINSQLRuntime
     private function &term()
     {
         $return = null;
-        if ($this->currentTokenMatches(Token::TXT_COLON)) {
+        if ($this->matches(Token::TXT_COLON)) {
             $return = $this->variable();
         }
         
-        if ($this->currentTokenMatches(Token::TXT_NUMBER)) {
+        if ($this->matches(Token::TXT_NUMBER)) {
             // TODO: Change to a different type.
             $return = new Variable($this->lexer->number());
         }
     
-        if ($this->currentTokenMatches(Token::TXT_STRING)) {
+        if ($this->matches(Token::TXT_STRING)) {
             $return = new Variable($this->lexer->string());
         }
         
@@ -184,7 +184,7 @@ class SINSQLRuntime
      */
     private function &variable()
     {
-        $this->expected(Token::TXT_SYMBOL);
+        $this->nextTokenExpected(Token::TXT_SYMBOL);
         $this->advanceToken();
         $symbol = $this->lexer->symbol();
     
@@ -201,57 +201,47 @@ class SINSQLRuntime
         
     }
     
-    private function expected($token)
+    private function nextTokenExpected($token)
     {
-        if (!$this->matches($token))
-            throw new TokenMismatchException($token, $this->nextToken(), $this->lexer->lineColumn());
+        if (!$this->nextTokenMatches($token))
+            throw new TokenMismatchException($token, $this->nextToken, $this->lexer->lineColumn());
         return true;
     }
     
-    private function currentTokenExpected($token)
+    private function expected($token)
     {
-        if (!$this->currentTokenMatches($token))
-            throw new TokenMismatchException($token, $this->currentToken(), $this->lexer->lineColumn());
+        if (!$this->matches($token))
+            throw new TokenMismatchException($token, $this->token, $this->lexer->lineColumn());
         return true;
+    }
+    
+    private function nextTokenMatches($token)
+    {
+        return ($token == $this->nextToken);
     }
     
     private function matches($token)
     {
-        return ($token == $this->nextToken());
-    }
-    
-    private function currentTokenMatches($token)
-    {
-        return ($this->currentToken() == $token);
+        return ($this->token == $token);
     }
     
     private function advanceToken()
     {
-        $this->currentToken = $this->nextToken;
+        $this->token = $this->nextToken;
         $this->nextToken = $this->lexer->getToken();
-    }
-    
-    private function currentToken()
-    {
-        return $this->currentToken;
-    }
-    
-    private function nextToken()
-    {
-        return $this->nextToken;
     }
     
     private function isEOF()
     {
-        return ($this->currentToken() == Token::EOF);
+        return ($this->token == Token::EOF);
     }
     
     private function isTerm()
     {
         return (
-            $this->currentTokenMatches(Token::TXT_COLON) ||
-            $this->currentTokenMatches(Token::TXT_NUMBER) ||
-            $this->currentTokenMatches(Token::TXT_STRING)
+            $this->matches(Token::TXT_COLON) ||
+            $this->matches(Token::TXT_NUMBER) ||
+            $this->matches(Token::TXT_STRING)
         );
     }
 }

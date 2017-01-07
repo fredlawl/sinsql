@@ -15,7 +15,7 @@ class Lexer
     private $buffer;
     
     private $nextCharacter = "";
-    private $currentCharacter = "";
+    private $character = "";
     
     private $number = 0;
     private $string = "";
@@ -27,8 +27,8 @@ class Lexer
     public function __construct(IBuffer& $buffer)
     {
         $this->buffer = $buffer;
-        $this->currentCharacter = $this->buffer->get();
-        $this->identifier = $this->currentCharacter;
+        $this->character = $this->buffer->get();
+        $this->identifier = $this->character;
         $this->nextCharacter = $this->buffer->get();
     }
     
@@ -37,7 +37,7 @@ class Lexer
         $tmpToken = Token::EOF;
         
         // Immediate close if done scanning
-        if ($this->currentCharacter == null)
+        if ($this->character == null)
             return Token::EOF;
         
         // parse whitespace
@@ -66,8 +66,8 @@ class Lexer
             $this->symbol = $this->parseSymbol();
             $tmpToken = Token::TXT_SYMBOL;
         } else {
-            $char = $this->currentCharacter;
-            $this->nextCharacter();
+            $char = $this->character;
+            $this->advanceBuffer();
             
             if (!Token::getToken($char, $tmpToken)) {
                 throw new IllegalCharacterException(
@@ -115,8 +115,8 @@ class Lexer
     {
         $result = 0;
         do {
-            $result = $result * 10 + intval($this->currentCharacter);
-            $this->nextCharacter();
+            $result = $result * 10 + intval($this->character);
+            $this->advanceBuffer();
         } while ($this->isDigit());
         
         return $result;
@@ -129,27 +129,27 @@ class Lexer
         $result = "";
     
         do {
-            $this->nextCharacter();
-            $result .= $this->currentCharacter;
+            $this->advanceBuffer();
+            $result .= $this->character;
         } while ($this->nextCharacter != '"' && $this->nextCharacter != null);
     
-        $this->nextCharacter();
-        if ($this->currentCharacter != '"') {
+        $this->advanceBuffer();
+        if ($this->character != '"') {
             throw new FailedToParseException("Expected closing quotation mark", $lineColumn);
         }
         
-        $this->nextCharacter();
+        $this->advanceBuffer();
         return $result;
     }
     
     private function parseSymbol()
     {
-        $this->nextCharacter();
+        $this->advanceBuffer();
         
         $result = $this->identifier;
         do {
-            $result = $result . $this->currentCharacter;
-            $this->nextCharacter();
+            $result = $result . $this->character;
+            $this->advanceBuffer();
         } while ($this->isAllowableCharacter());
         
         return $result;
@@ -158,35 +158,35 @@ class Lexer
     private function consumeWhitespace()
     {
         do {
-            $this->nextCharacter();
+            $this->advanceBuffer();
         } while ($this->isWhitespace());
     }
     
-    private function nextCharacter()
+    private function advanceBuffer()
     {
-        $this->identifier = $this->currentCharacter;
-        $this->currentCharacter = $this->nextCharacter;
+        $this->identifier = $this->character;
+        $this->character = $this->nextCharacter;
         $this->nextCharacter = $this->buffer->get();
     }
     
     private function isWhitespace()
     {
-        return ctype_space($this->currentCharacter);
+        return ctype_space($this->character);
     }
     
     private function isDigit()
     {
-        return ctype_digit($this->currentCharacter);
+        return ctype_digit($this->character);
     }
     
     private function isAllowableCharacter()
     {
-        return ctype_alpha($this->currentCharacter);
+        return ctype_alpha($this->character);
     }
     
     private function isQuote()
     {
-        return $this->currentCharacter == '"';
+        return $this->character == '"';
     }
     
     public function lineColumn()
