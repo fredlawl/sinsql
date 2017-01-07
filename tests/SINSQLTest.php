@@ -127,14 +127,14 @@ class SINSQLTest extends PHPUnit_Framework_TestCase
     
     public function testNumberIn()
     {
-        $this->assertTrue($this->parser->parse("14 IN (10, 12, 13, 14)"));
-        $this->assertFalse($this->parser->parse("14 IN (1, 2, 3, 4)"));
+        $this->assertTrue($this->parser->parse("14 IN [10, 12, 13, 14]"));
+        $this->assertFalse($this->parser->parse("14 IN [1, 2, 3, 4]"));
     }
     
     public function testNumberNotIn()
     {
-        $this->assertFalse($this->parser->parse("14 NOT IN (10, 12, 13, 14)"));
-        $this->assertTrue($this->parser->parse("14 NOT IN (1, 2, 3, 4)"));
+        $this->assertFalse($this->parser->parse("14 NOT IN [10, 12, 13, 14]"));
+        $this->assertTrue($this->parser->parse("14 NOT IN [1, 2, 3, 4]"));
     }
     
 }

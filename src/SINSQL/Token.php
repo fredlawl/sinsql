@@ -8,6 +8,9 @@ class Token
     const TXT_LEFTPAREN = '(';
     const TXT_RIGHTPAREN = ')';
     
+    const TXT_LEFTBRACK = '[';
+    const TXT_RIGHTBRACK = ']';
+    
     const TXT_COLON = ':';
     const TXT_DOT = '.';
     const TXT_COMMA = ',';

@@ -11,7 +11,9 @@ use SINSQL\Expressions\ExpressionType;
 use SINSQL\Interfaces\IBuffer;
 use SINSQL\Interfaces\ITerm;
 use SINSQL\Interfaces\IVariableMapper;
-use SINSQL\Operands\Variable;
+use SINSQL\Operands\ArrayValue;
+use SINSQL\Operands\MixedValue;
+use SINSQL\Operands\StringValue;
 
 class SINSQLRuntime
 {
@@ -90,7 +92,7 @@ class SINSQLRuntime
             $expression = $this->expression()->evaluate();
             $this->nextTokenExpected(Token::TXT_RIGHTPAREN);
             $this->advanceToken();
-            return new Variable($expression);
+            return new MixedValue($expression);
         }
         
         return $this->term();
@@ -138,16 +140,16 @@ class SINSQLRuntime
             $expression = $this->expression()->evaluate();
             $this->nextTokenExpected(Token::TXT_RIGHTPAREN);
             $this->advanceToken();
-            return new Variable($expression);
+            return new MixedValue($expression);
         }
-
-//        if ($this->isTerm()) {
-            $right = $this->term();
-//        } else if ($this->isSequence()) {
-//
-//        }
         
-        return $right;
+        if ($this->isSequence()) {
+            $expression = $this->sequence();
+            $this->advanceToken();
+            return $expression;
+        }
+        
+        return $this->term();
     }
     
     /**
@@ -163,11 +165,11 @@ class SINSQLRuntime
         
         if ($this->matches(Token::TXT_NUMBER)) {
             // TODO: Change to a different type.
-            $return = new Variable($this->lexer->number());
+            $return = new MixedValue($this->lexer->number());
         }
     
         if ($this->matches(Token::TXT_STRING)) {
-            $return = new Variable($this->lexer->string());
+            $return = new StringValue($this->lexer->string());
         }
         
         if (is_null($return)) {
@@ -179,7 +181,7 @@ class SINSQLRuntime
     
     
     /**
-     * @return Variable
+     * @return MixedValue
      * @throws SINQLException
      */
     private function &variable()
@@ -193,12 +195,43 @@ class SINSQLRuntime
             throw new SINQLException($message);
         }
         
-        return new Variable($this->variableMapper->map($symbol));
+        return new MixedValue($this->variableMapper->map($symbol));
     }
     
-    private function sequence()
+    
+    /**
+     * @return ITerm
+     */
+    private function &sequence()
     {
+        $sequence = new ArrayValue();
+        $this->expected(Token::TXT_LEFTBRACK);
         
+        do {
+            $this->advanceToken();
+            
+            $sequence[] = $this->term()->evaluate();
+            
+            // Verify comma rule
+            if ($this->nextToken != Token::TXT_RIGHTBRACK && $this->nextToken != Token::EOF) {
+                // Ignore space
+                if ($this->nextTokenMatches(Token::TXT_SPACE))
+                    $this->advanceToken();
+                
+                // Must verify comma is present
+                $this->nextTokenExpected(Token::TXT_COMMA);
+                $this->advanceToken();
+                
+                // Ignore space
+                if ($this->nextTokenMatches(Token::TXT_SPACE))
+                    $this->advanceToken();
+            }
+            
+        } while ($this->nextToken != Token::TXT_RIGHTBRACK && $this->nextToken != Token::EOF);
+        
+        $this->nextTokenExpected(Token::TXT_RIGHTBRACK);
+        
+        return $sequence;
     }
     
     private function nextTokenExpected($token)
@@ -243,5 +276,10 @@ class SINSQLRuntime
             $this->matches(Token::TXT_NUMBER) ||
             $this->matches(Token::TXT_STRING)
         );
+    }
+    
+    private function isSequence()
+    {
+        return $this->matches(Token::TXT_LEFTBRACK);
     }
 }

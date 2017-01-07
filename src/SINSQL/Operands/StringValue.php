@@ -2,10 +2,9 @@
 
 namespace SINSQL\Operands;
 
-
 use SINSQL\Interfaces\ITerm;
 
-class Variable implements ITerm
+class StringValue implements ITerm
 {
     public $value;
     

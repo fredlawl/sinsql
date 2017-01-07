@@ -90,7 +90,8 @@ class LexerTest extends PHPUnit_Framework_TestCase
     
     public function testTokenizerWorks()
     {
-        $characters = "(12 IS 12) AND (\"tree\" IS \"tree\")";
+//        $characters = "(12 IS 12) AND (\"tree\" IS \"tree\")";
+        $characters = "(12 IS 12) AND (12 IN [12, 1, 4, 5])";
         $scanner = new Lexer(new StringBuffer($characters));
         
         while (($tok = $scanner->getToken()) != Token::EOF)

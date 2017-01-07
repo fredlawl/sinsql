@@ -125,7 +125,14 @@ class SINSQLRuntimeTest extends PHPUnit_Framework_TestCase
         $expected = "(\"Bob\" IS \"bob\") OR ((12 IS 12) AND (\"tree\" IS \"tree\"))";
         $parser = new SINSQLRuntime(new StringBuffer($expected));
         $tree = $parser->generateParseTree();
-        var_dump($tree);
+        $this->assertTrue($tree->evaluate());
+    }
+    
+    public function testInExpression()
+    {
+        $expected = "(12 IS 12) AND (12 IN [12, 1, 4, 5])";
+        $parser = new SINSQLRuntime(new StringBuffer($expected));
+        $tree = $parser->generateParseTree();
         $this->assertTrue($tree->evaluate());
     }
     

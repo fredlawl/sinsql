@@ -3,6 +3,7 @@
 namespace SINSQL\Expressions;
 
 
+use SINSQL\Exceptions\SINQLException;
 use SINSQL\Interfaces\ITerm;
 
 abstract class Expression implements ITerm
@@ -35,13 +36,13 @@ abstract class Expression implements ITerm
     protected function checkForNulls()
     {
         if ($this->isNodeNull())
-            throw new \Exception("Left and Right is null.");
+            throw new SINQLException("Left and Right of an expression are null.");
         
         if ($this->isLeftNodeNull())
-            throw new \Exception("Left node is null.");
+            throw new SINQLException("Left node of an expression is null.");
         
         if ($this->isRightNodeNull())
-            throw new \Exception("Right node is null.");
+            throw new SINQLException("Right node of an expression is null.");
     }
     
     public function setLeft(ITerm& $operand)
