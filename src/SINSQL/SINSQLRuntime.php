@@ -203,7 +203,7 @@ class SINSQLRuntime
     {
         $this->expected(Token::TOK_VARIABLE);
         $this->advanceToken();
-        $symbol = $this->lexer->symbol();
+        $symbol = $this->lexer->variable();
     
         if (is_null($this->variableMapper)) {
             $message = sprintf("Unable to locate variable mapper. '%s' could not be mapped.", $symbol);
