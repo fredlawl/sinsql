@@ -22,10 +22,9 @@ class Lexer
     private $identifier = '';
     private $symbol = '';
     
-    private $token;
     private $numberOfTokensConsumed = 0;
     
-    public function __construct(IBuffer $buffer)
+    public function __construct(IBuffer& $buffer)
     {
         $this->buffer = $buffer;
         $this->currentCharacter = $this->buffer->get();
@@ -35,6 +34,8 @@ class Lexer
     
     public function getToken()
     {
+        $tmpToken = Token::EOF;
+        
         // Immediate close if done scanning
         if ($this->currentCharacter == null)
             return Token::EOF;
@@ -42,36 +43,33 @@ class Lexer
         // parse whitespace
         if ($this->isWhitespace()) {
             $this->consumeWhitespace();
-            $this->token = Token::TXT_SPACE;
-            $this->numberOfTokensConsumed++;
-            return $this->token;
+            ++$this->numberOfTokensConsumed;
+            return Token::TXT_SPACE;
         }
         
         // parse a number
         if ($this->isDigit()) {
             $this->number = $this->parseNumber();
-            $this->token = Token::TXT_NUMBER;
-            $this->numberOfTokensConsumed++;
-            return $this->token;
+            ++$this->numberOfTokensConsumed;
+            return Token::TXT_NUMBER;
         }
         
         // parse a string
         if ($this->isQuote()) {
             $this->string = $this->parseString();
-            $this->token = Token::TXT_STRING;
-            $this->numberOfTokensConsumed++;
-            return $this->token;
+            ++$this->numberOfTokensConsumed;
+            return Token::TXT_STRING;
         }
         
         // parse a character
         if ($this->isAllowableCharacter()) {
             $this->symbol = $this->parseSymbol();
-            $this->token = Token::TXT_SYMBOL;
+            $tmpToken = Token::TXT_SYMBOL;
         } else {
             $char = $this->currentCharacter;
             $this->nextCharacter();
             
-            if (!Token::getToken($char, $this->token)) {
+            if (!Token::getToken($char, $tmpToken)) {
                 throw new IllegalCharacterException(
                     $char,
                     $this->lineColumn()
@@ -79,14 +77,14 @@ class Lexer
             }
         }
         
-        $this->numberOfTokensConsumed++;
-        return $this->token;
+        ++$this->numberOfTokensConsumed;
+        return $tmpToken;
     }
     
     public function skipNextTokens($number)
     {
         $token = null;
-        for ($i = 0; $i < $number; $i++) {
+        for ($i = 0; $i < $number; ++$i) {
             $token = $this->getToken();
         }
         
@@ -173,17 +171,17 @@ class Lexer
     
     private function isWhitespace()
     {
-        return preg_match("/\s/", $this->currentCharacter) > 0;
+        return ctype_space($this->currentCharacter);
     }
     
     private function isDigit()
     {
-        return preg_match("/[0-9]/", $this->currentCharacter) > 0;
+        return ctype_digit($this->currentCharacter);
     }
     
     private function isAllowableCharacter()
     {
-        return preg_match("/[a-zA-Z]/", $this->currentCharacter) > 0;
+        return ctype_alpha($this->currentCharacter);
     }
     
     private function isQuote()

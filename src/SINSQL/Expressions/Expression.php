@@ -44,17 +44,17 @@ abstract class Expression implements ITerm
             throw new \Exception("Right node is null.");
     }
     
-    public function setLeft(ITerm $operand)
+    public function setLeft(ITerm& $operand)
     {
         $this->left = $operand;
     }
     
-    public function setRight(ITerm $operand)
+    public function setRight(ITerm& $operand)
     {
         $this->right = $operand;
     }
     
-    public function setLeftRight(ITerm $left, ITerm $right)
+    public function setLeftRight(ITerm& $left, ITerm& $right)
     {
         $this->setLeft($left);
         $this->setRight($right);

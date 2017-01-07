@@ -9,6 +9,7 @@ class ExpressionRegistry
 {
     private static $expressionRegistry = null;
     private static $comparableExpressionRegistry = null;
+    private static $validExpressions = [];
     
     
     /**
@@ -36,6 +37,9 @@ class ExpressionRegistry
     
     private static function checkForExpression($expression)
     {
+        if (isset(self::$validExpressions[$expression]))
+            return;
+        
         self::buildRegistry();
         if (!isset(self::$expressionRegistry[$expression]) || !class_exists(self::$expressionRegistry[$expression])) {
             $prettyToken = null;
@@ -45,6 +49,8 @@ class ExpressionRegistry
         
             throw new \UnexpectedValueException('Expression Registry has no entry for "' . $prettyToken . '"');
         }
+    
+        self::$validExpressions[$expression] = true;
     }
     
     private static function buildRegistry()

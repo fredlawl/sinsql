@@ -23,6 +23,7 @@ class Token
     
     private static $tokenNamesTable = null;
     private static $tokenValueLookupTable = null;
+    private static $tokenConstantLookupTable = [];
     
     public static function getToken($characters, &$out)
     {
@@ -30,7 +31,12 @@ class Token
         if (!isset(self::$tokenNamesTable[$characters]))
             return false;
         
-        $out = constant(__CLASS__ . '::' . self::$tokenNamesTable[$characters]);
+        if (!isset(self::$tokenConstantLookupTable[$characters])) {
+            $out = self::$tokenConstantLookupTable[$characters] = constant(__CLASS__ . '::' . self::$tokenNamesTable[$characters]);
+            return true;
+        }
+        
+        $out = self::$tokenConstantLookupTable[$characters];
         return true;
     }
     

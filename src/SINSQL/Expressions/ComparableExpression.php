@@ -16,14 +16,14 @@ abstract class ComparableExpression extends Expression implements ICanCompare
     
     public abstract function doCompare();
     
-    public function __construct(IComparer $comparer = null)
+    public function __construct(IComparer& $comparer = null)
     {
         if (is_null($comparer))
             $comparer = new DefaultComparer();
         $this->setComparer($comparer);
     }
     
-    public function setComparer(IComparer $comparer)
+    public function setComparer(IComparer& $comparer)
     {
         $this->comparer = $comparer;
     }

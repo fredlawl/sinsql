@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: fredlawl
- * Date: 1/3/17
- * Time: 5:06 PM
- */
 
 namespace SINSQL\Expressions;
 
@@ -24,6 +18,7 @@ class ExpressionType
     
     private static $expressionTypesTable = null;
     private static $expressionTypesNamesTable = null;
+    private static $expressionConstantLookup = [];
     
     public static function getExpression($parsedExpression, &$out)
     {
@@ -31,7 +26,12 @@ class ExpressionType
         if (!isset(self::$expressionTypesNamesTable[$parsedExpression]))
             return false;
     
-        $out = constant(__CLASS__ . '::' . self::$expressionTypesNamesTable[$parsedExpression]);
+        if (!isset(self::$expressionConstantLookup[$parsedExpression])) {
+            $out = self::$expressionConstantLookup[$parsedExpression] = constant(__CLASS__ . '::' . self::$expressionTypesNamesTable[$parsedExpression]);
+            return true;
+        }
+    
+        $out = self::$expressionConstantLookup[$parsedExpression];
         return true;
     }
     

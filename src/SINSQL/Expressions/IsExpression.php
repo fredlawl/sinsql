@@ -9,7 +9,7 @@ use SINSQL\Interfaces\IComparer;
 
 class IsExpression extends ComparableExpression
 {
-    public function __construct(IComparer $comparer = null)
+    public function __construct(IComparer& $comparer = null)
     {
         parent::__construct($comparer);
     }

@@ -23,7 +23,7 @@ class StringBuffer implements IBuffer
     
     public function get()
     {
-        $this->currentColumnIndex++;
+        ++$this->currentColumnIndex;
         $lineLength = strlen($this->currentLine);
         
         if ($this->currentColumnIndex >= $lineLength) {
@@ -35,7 +35,7 @@ class StringBuffer implements IBuffer
             
             $line = $this->input[$this->currentLineIndex];
             $this->currentColumnIndex = 0;
-            $this->currentLineIndex++;
+            ++$this->currentLineIndex;
             $this->currentLine = $line;
             
             $lineLength = strlen($line);

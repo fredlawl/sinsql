@@ -18,7 +18,7 @@ class SINSQL
      * SINSQL constructor.
      * @param IVariableMapper $variableMapper
      */
-    public function __construct(IVariableMapper $variableMapper = null)
+    public function __construct(IVariableMapper& $variableMapper = null)
     {
         $this->variableMapper = $variableMapper;
     }

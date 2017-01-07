@@ -29,7 +29,7 @@ class SINSQLRuntime
     private $currentToken = null;
     
     
-    public function __construct(IBuffer $buffer, IVariableMapper $variableMapper = null)
+    public function __construct(IBuffer& $buffer, IVariableMapper& $variableMapper = null)
     {
         $this->lexer = new Lexer($buffer);
         $this->variableMapper = $variableMapper;
@@ -68,7 +68,7 @@ class SINSQLRuntime
      * @return ITerm
      * @throws FailedToParseException
      */
-    private function expression()
+    private function &expression()
     {
         $this->advanceToken();
         
@@ -87,15 +87,13 @@ class SINSQLRuntime
     private function left()
     {
         if ($this->currentTokenMatches(Token::TXT_LEFTPAREN)) {
-            $expression = $this->expression();
+            $expression = $this->expression()->evaluate();
             $this->expected(Token::TXT_RIGHTPAREN);
             $this->advanceToken();
-            return $expression;
+            return new Variable($expression);
         }
         
-        $left = $this->term();
-//        $this->expected(Token::TXT_SYMBOL);
-        return $left;
+        return $this->term();
     }
     
     
@@ -108,19 +106,13 @@ class SINSQLRuntime
     {
         $this->advanceToken();
         $operator = "";
-        $currentToken = null;
         $expression = null;
         $lineColumn = $this->lexer->lineColumn();
     
         do {
-            if ($this->currentTokenMatches(Token::TXT_SPACE)) {
-                $operator .= " ";
-            } else {
-                $operator .= $this->lexer->symbol();
-            }
-            
+            $operator .= ($this->currentTokenMatches(Token::TXT_SPACE)) ? " " : $this->lexer->symbol();
             $this->advanceToken();
-        } while($this->currentTokenMatches(Token::TXT_SPACE) || $this->currentTokenMatches(Token::TXT_SYMBOL));
+        } while ($this->currentTokenMatches(Token::TXT_SPACE) || $this->currentTokenMatches(Token::TXT_SYMBOL));
         
         $operator = trim($operator, " ");
     
@@ -133,8 +125,7 @@ class SINSQLRuntime
             throw new FailedToParseException($message, $lineColumn);
         }
         
-        $expression = ExpressionRegistry::getExpression($expression);
-        return $expression;
+        return ExpressionRegistry::getExpression($expression);
     }
     
     
@@ -144,10 +135,10 @@ class SINSQLRuntime
     private function right()
     {
         if ($this->currentTokenMatches(Token::TXT_LEFTPAREN)) {
-            $expression = $this->expression();
+            $expression = $this->expression()->evaluate();
             $this->expected(Token::TXT_RIGHTPAREN);
             $this->advanceToken();
-            return $expression;
+            return new Variable($expression);
         }
 
 //        if ($this->isTerm()) {
@@ -163,7 +154,7 @@ class SINSQLRuntime
      * @return ITerm
      * @throws SINQLException
      */
-    private function term()
+    private function &term()
     {
         $return = null;
         if ($this->currentTokenMatches(Token::TXT_COLON)) {
@@ -183,7 +174,6 @@ class SINSQLRuntime
             throw new SINQLException("Invalid call to function " . __CLASS__ . "::term().");
         }
         
-//        $this->advanceToken();
         return $return;
     }
     
@@ -192,7 +182,7 @@ class SINSQLRuntime
      * @return Variable
      * @throws SINQLException
      */
-    private function variable()
+    private function &variable()
     {
         $this->expected(Token::TXT_SYMBOL);
         $this->advanceToken();
@@ -203,8 +193,7 @@ class SINSQLRuntime
             throw new SINQLException($message);
         }
         
-        $value = $this->variableMapper->map($symbol);
-        return new Variable($value);
+        return new Variable($this->variableMapper->map($symbol));
     }
     
     private function sequence()
@@ -241,7 +230,6 @@ class SINSQLRuntime
         $this->currentToken = $this->nextToken;
         $this->nextToken = $this->lexer->getToken();
     }
-    
     
     private function currentToken()
     {
