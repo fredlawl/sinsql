@@ -137,4 +137,10 @@ class SINSQLTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->parser->parse("14 NOT IN [1, 2, 3, 4]"));
     }
     
+    public function testStringCaseInsensitiveIs()
+    {
+        $this->assertTrue($this->parser->parse("\"test\" IS \"test\""));
+        $this->assertTrue($this->parser->parse("\"test\" IS \"TEST\""));
+    }
+    
 }

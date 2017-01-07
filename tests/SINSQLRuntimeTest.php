@@ -99,21 +99,16 @@ class SINSQLRuntimeTest extends PHPUnit_Framework_TestCase
     }
     
     
-    /**
-     * In order for this test to work, there needs to be a
-     * string comparer injected into the parser.
-     */
-//    public function testStringEquality()
-//    {
-//        $expected = "\"test\" IS \"TEST\"";
-//        $parser = new SINSQLParser(new StringBuffer($expected));
-//        $this->assertTrue($parser->generateParseTree()->evaluate());
-//    }
+    public function testStringEquality()
+    {
+        $expected = "\"test\" IS \"TEST\"";
+        $parser = new SINSQLRuntime(new StringBuffer($expected));
+        $this->assertTrue($parser->generateParseTree()->evaluate());
+    }
     
 
     public function testMultipleExpressions()
     {
-//        $expected = "(12 IS 12) AND ((\"tree\" IS \"TrEe\") AND (13 IS 13))";
         $expected = "(12 IS 12) AND (\"tree\" IS \"tree\")";
         $parser = new SINSQLRuntime(new StringBuffer($expected));
         $tree = $parser->generateParseTree();

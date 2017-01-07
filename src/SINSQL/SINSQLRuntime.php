@@ -2,9 +2,11 @@
 
 namespace SINSQL;
 
+use SINSQL\Comparers\StringComparer;
 use SINSQL\Exceptions\FailedToParseException;
 use SINSQL\Exceptions\SINQLException;
 use SINSQL\Exceptions\TokenMismatchException;
+use SINSQL\Expressions\ComparableExpression;
 use SINSQL\Expressions\Expression;
 use SINSQL\Expressions\ExpressionRegistry;
 use SINSQL\Expressions\ExpressionType;
@@ -77,6 +79,15 @@ class SINSQLRuntime
         $left = $this->left();
         $operator = $this->operator();
         $right = $this->right();
+        
+        // Checking for string values
+        if (
+            $left instanceof StringValue &&
+            $right instanceof StringValue &&
+            $operator instanceof ComparableExpression
+        ) {
+            $operator->setComparer(new StringComparer());
+        }
         
         $operator->setLeftRight($left, $right);
         return $operator;
@@ -173,7 +184,11 @@ class SINSQLRuntime
         }
         
         if (is_null($return)) {
-            throw new SINQLException("Invalid call to function " . __CLASS__ . "::term().");
+            throw new TokenMismatchException([
+                Token::TXT_COLON,
+                Token::TXT_NUMBER,
+                Token::TXT_STRING
+            ], $this->token, $this->lexer->lineColumn());
         }
         
         return $return;
