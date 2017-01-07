@@ -185,7 +185,7 @@ class SINSQLRuntime
         
         if (is_null($return)) {
             throw new TokenMismatchException([
-                Token::TOK_COLON,
+                Token::TOK_VARIABLE,
                 Token::TOK_NUMBER,
                 Token::TOK_STRING
             ], $this->token, $this->lexer->lineColumn());
