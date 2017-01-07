@@ -23,6 +23,9 @@ class StringBuffer implements IBuffer
     
     public function get()
     {
+        if ($this->eof)
+            return null;
+        
         ++$this->currentColumnIndex;
         $lineLength = strlen($this->currentLine);
         
