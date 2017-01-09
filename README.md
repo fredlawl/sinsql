@@ -4,6 +4,19 @@ A small little language interpreter written in PHP to parse and execute user-def
 
 This pet project was inspired by a past project where a grammar similar to this was needed to conditionally render content on site based on certain user-defined criteria.
 
+## Install
+
+**Requirements:**
+* PHP5.5+
+
+You'll need [Composer](https://getcomposer.org/doc/00-intro.md) then run:
+
+`composer require fredlawl/sinsql`
+
+Require the autoload file into the files that will use SINSQL:
+
+`require_once('vendor/autoload.php');`
+
 ## Examples
 
 >Results will always be false unless proven true.
