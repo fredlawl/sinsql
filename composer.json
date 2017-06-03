@@ -29,7 +29,8 @@
   },
   "autoload": {
     "psr-4": {
-      "SINSQL\\": "src/"
+      "SINSQL\\": "src/SINSQL",
+      "SINSQLTest\\": "tests/SINSQLTest"
     }
   },
   "require-dev": {

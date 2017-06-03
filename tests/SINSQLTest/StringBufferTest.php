@@ -1,9 +1,11 @@
 <?php
 
+namespace SINSQLTest;
+
 use SINSQL\Interfaces\IBuffer;
 use SINSQL\StringBuffer;
 
-class StringBufferTest extends PHPUnit_Framework_TestCase
+class StringBufferTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var IBuffer

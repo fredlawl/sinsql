@@ -1,5 +1,7 @@
 <?php
 
+namespace SINSQLTest;
+
 use SINSQL\Exceptions\FailedToParseException;
 use SINSQL\Exceptions\IllegalCharacterException;
 use SINSQL\Interfaces\IBuffer;
@@ -8,7 +10,7 @@ use SINSQL\StringBuffer;
 use SINSQL\Token;
 
 
-class LexerTest extends PHPUnit_Framework_TestCase
+class LexerTest extends \PHPUnit_Framework_TestCase
 {
     public function testStatementIsEmpty()
     {

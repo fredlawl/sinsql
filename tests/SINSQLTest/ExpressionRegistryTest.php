@@ -1,13 +1,13 @@
 <?php
 
-require_once('../vendor/autoload.php');
+namespace SINSQLTest;
 
 use SINSQL\Expressions\ExpressionRegistry;
 use SINSQL\Expressions\ExpressionType;
 
-class OperationRegistryTest extends PHPUnit_Framework_TestCase
+class ExpressionRegistryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testExpressonRegistryFails()
+    public function testExpressionRegistryFails()
     {
         try {
             $garbage = ExpressionRegistry::getExpression('asdfasdf');

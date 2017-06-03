@@ -1,9 +1,11 @@
 <?php
 
+namespace SINSQLTest;
+
 use SINSQL\Interfaces\IVariableMapper;
 use SINSQL\SINSQL;
 
-class SINSQLTest extends PHPUnit_Framework_TestCase
+class SINSQLTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var SINSQL

@@ -1,6 +1,6 @@
 <?php
 
-require_once('../vendor/autoload.php');
+namespace SINSQLTest;
 
 use SINSQL\Comparers\StringComparer;
 use SINSQL\Expressions\ExpressionType;
@@ -9,7 +9,7 @@ use SINSQL\Operands\MixedValue;
 use SINSQL\Expressions\ExpressionRegistry;
 use SINSQL\Token;
 
-class ParseTreeTest extends PHPUnit_Framework_TestCase
+class ParseTreeTest extends \PHPUnit_Framework_TestCase
 {
     public function testStringEqualsOperation()
     {

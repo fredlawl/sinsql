@@ -1,5 +1,7 @@
 <?php
 
+namespace SINSQLTest;
+
 use SINSQL\Exceptions\FailedToParseException;
 use SINSQL\Exceptions\IllegalCharacterException;
 use SINSQL\Exceptions\SINQLException;
@@ -9,7 +11,7 @@ use SINSQL\SINSQLRuntime;
 use SINSQL\StringBuffer;
 
 
-class SINSQLRuntimeTest extends PHPUnit_Framework_TestCase
+class SINSQLRuntimeTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var IVariableMapper
